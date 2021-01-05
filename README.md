@@ -18,7 +18,30 @@ Some steps would include:
 
 ## Examples
 
-In the exampes directory is the epicore cellranger pipeline that runs `cellranger mkfastq`, `cellranger count`, and `cellranger vdj`
+In the examples directory is the epicore cellranger pipeline (`cellranger.sh`) that runs:  `cellranger mkfastq`, `cellranger count`, and `cellranger vdj`
 
+## Interactive server
+
+epicore08.pbtech is our interactive server.
+
+I suspect you will have to set a password. Try this:  [SCU Password reset](https://scu.med.cornell.edu/sspr)
+
+You shouldn't be able to login to epi8 directly, so, login through the head node
+
+```bash
+ssh $CWID@pascal.med.cornell.edu
+```
+
+then
+
+```bash
+ssh epicore08.pbtech
+```
+
+It would be a good idea to make a working directory
+
+```bash
+/scratch001/$USER
+```
 
 ...
