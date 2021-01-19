@@ -47,43 +47,65 @@ It would be a good idea to make a working directory
 
 ## Example datasets and cellranger commands
 
-- half cellranger demux - 2 lanes of data
+- We didn't have any 5GE:VDJ run with cellranger 5.0, so I ran a couple
+- there are 12 samples in this project:  6 5GE + 6 VDJ
+- Fastqs are located here:
 
-  ```bash
-  /athena/epicore/ops/scratch/analysis/store100/demux_2200422_201203_A00814_0313_AHM5KKDSXY_EC-MM-6428__uid17050
-  ```
+```bash
+/athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974/Project_EC-LV-6398
+```
 
-- full cellranger demux - 4 lanes of data
+- I ran one of each through cellranger 5.0, located here:
 
-  ```bash
-  /athena/epicore/ops/scratch/analysis/store100/demux_2200422_201203_A00814_0313_AHM5KKDSXY_EC-MM-6428__uid17114
-  ```
+```bash
+/scratch001/thk2008/cellranger5/Project_EC-LV-6398
+└── Project_EC-LV-6398
+    ├── count
+    │   └── MYD88_3-GEX
+    │       └── ...
+    ├── fastqs
+    │   ├── Sample_MYD88_3-GEX
+    │   |   └── ...
+    │   └── Sample_MYD88_3-Ig
+    │       └── ...
+    └── vdj
+        └── MYD88_3-Ig
+            └── ...
+```
 
-- pipeline cellranger count command
-  - from `/athena/epicore/ops/scratch/analysis/store100/external_cellranger_count_201203_A00814_0313_AHM5KKDSXY_EC-MM-6428__uid17128/auxiliary/logs/cellranger-2020-12-10.log`
+- with these commands:
 
-  ```bash
-  cellranger.sh -c -x 32 -y 256 -i /athena/epicore/ops/scratch/analysis/store100/demux_2200422_201203_A00814_0313_AHM5KKDSXY_EC-MM-6428__uid17114/Project_EC-MM-6428 -p EC-MM-6428 -t /athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-cellranger-mm10-3.0.0
-  ```
+```bash
+# count
+/opt/cellranger-5.0.0/bin/cellranger count --id=MYD88_3-GEX --fastqs=/scratch001/thk2008/cellranger5/Project_EC-LV-6398/fastqs/Sample_MYD88_3-GEX --transcriptome=/athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-gex-mm10-2020-A --sample=MYD88_3-GEX --description=EC-LV-6398 --disable-ui --localcores=16 --localmem=128
+# vdj
+/opt/cellranger-5.0.0/bin/cellranger vdj --id=MYD88_3-Ig --fastqs=/scratch001/thk2008/cellranger5/Project_EC-LV-6398/fastqs/Sample_MYD88_3-Ig --reference=/athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0 --sample=MYD88_3-Ig --description=EC-LV-6398 --disable-ui --localcores=16 --localmem=128
 
-- straight cellranger count command
+```
 
-  ```bash
-  cellranger count --id=IL10_A-GEX --fastqs=/athena/epicore/ops/scratch/analysis/store100/demux_2200422_201203_A00814_0313_AHM5KKDSXY_EC-MM-6428__uid17114/Project_EC-MM-6428/Sample_IL10_A-GEX --transcriptome=/athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-cellranger-mm10-3.0.0 --sample=IL10_A-GEX --description=EC-MM-6428 --disable-ui --localcores=32 --localmem=256
-  ```
+- the cellranger 3 pipeline output is here:
+- MYD88_3-GEX
 
-- pipeline cellranger vdj command
-  - from `/athena/epicore/ops/scratch/analysis/store100/cellranger_vdj_201203_A00814_0313_AHM5KKDSXY_IL10_A-TCR__uid17125/auxiliary/logs/cellranger-2020-12-10.log`
+   ```bash
+   /athena/epicore/ops/scratch/analysis/store100/cellranger_count_201028_A00814_0296_AHVKWTDMXX_MYD88_3-GEX__uid16993
+   ```
 
-  ```bash
-  cellranger.sh -j -o -x 16 -y 128 -i /athena/epicore/ops/scratch/analysis/store100/demux_2200422_201203_A00814_0313_AHM5KKDSXY_EC-MM-6428__uid17114/Project_EC-MM-6428 -p EC-MM-6428 -s Sample_IL10_A-TCR -t /athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-cellranger-vdj-GRCm38-alts-ensembl-4.0.0
-  ```
+- MYD88_3-Ig
 
-- plain cellranger vdj command
+   ```bash
+   /athena/epicore/ops/scratch/analysis/store100/cellranger_vdj_201028_A00814_0296_AHVKWTDMXX_MYD88_3-Ig__uid16998
+   ```
 
-  ```bash
-  cellranger vdj --id=IL10_A-TCR --fastqs=/athena/epicore/ops/scratch/analysis/store100/demux_2200422_201203_A00814_0313_AHM5KKDSXY_EC-MM-6428__uid17114/Project_EC-MM-6428/Sample_IL10_A-TCR --reference=/athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-cellranger-vdj-GRCm38-alts-ensembl-4.0.0 --sample=IL10_A-TCR --description=EC-MM-6428 --disable-ui --localcores=16 --localmem=128 | tee -a logs/cellranger-2020-12-10.log
-  ```
+- there are small differences in the output
+  - MYD88_3-GEX count
+    - `/scratch001/thk2008/cellranger5/Project_EC-LV-6398/count/MYD88_3-GEX/outs/web_summary.html`
+    - `/athena/epicore/ops/scratch/analysis/store100/cellranger_count_201028_A00814_0296_AHVKWTDMXX_MYD88_3-GEX__uid16993/MYD88_3-GEX_web_summary.html`
+
+  - MYD88_3-Ig
+    - `/scratch001/thk2008/cellranger5/Project_EC-LV-6398/vdj/MYD88_3-Ig/outs/web_summary.html`
+    - `/athena/epicore/ops/scratch/analysis/store100/cellranger_vdj_201028_A00814_0296_AHVKWTDMXX_MYD88_3-Ig__uid16998/MYD88_3-Ig_web_summary.html`
+
+My hope is that, given the right sampelsheet, cellranger multi can do all of this with one command.
 
 ## Generating a sample sheet
 
