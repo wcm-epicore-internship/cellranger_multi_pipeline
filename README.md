@@ -47,9 +47,9 @@ It would be a good idea to make a working directory
 
 ## Example datasets and cellranger commands
 
-- We didn't have any 5GE:VDJ run with cellranger 5.0, so I ran a couple
+- we didn't have any 5GE:VDJ run with cellranger 5.0, so I ran a couple
 - there are 12 samples in this project:  6 5GE + 6 VDJ
-- Fastqs are located here:
+- fastqs are located here:
 
 ```bash
 /athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974/Project_EC-LV-6398
@@ -105,7 +105,7 @@ It would be a good idea to make a working directory
     - `/scratch001/thk2008/cellranger5/Project_EC-LV-6398/vdj/MYD88_3-Ig/outs/web_summary.html`
     - `/athena/epicore/ops/scratch/analysis/store100/cellranger_vdj_201028_A00814_0296_AHVKWTDMXX_MYD88_3-Ig__uid16998/MYD88_3-Ig_web_summary.html`
 
-My hope is that, given the right sampelsheet, cellranger multi can do all of this with one command.
+My hope is that, given the right sampelsheet, cellranger multi can do all 12 samples with one command.
 
 ## Generating a sample sheet
 
