@@ -140,9 +140,35 @@ My hope is that, given the right sampelsheet, cellranger multi can do all 12 sam
   1,Sample_GOT-XBP1-3P,GOT-XBP1-3P,AAATTAGAGG,,Project_EC-SR-6444
   ```
 
+## Sequencing monitor
+
+[SeqMon](https://abc.med.cornell.edu/sequencing_monitor/)
+
+```bash
+# code base
+/home/aladdin/sequencing_monitor/current
+
+# config file with paths to reference genomes, pipelines and stuff
+/home/aladdin/sequencing_monitor/current/config/config.yml
+
+# example for cellranger count pipeline
+/home/aladdin/sequencing_monitor/current/job_templates/cellranger_count/cellranger_count.qsub
+```
+
 ## Pipeline
 
-- ...
+- Original demux
+  - see datasheetToSamplesheet.rb
+
+```bash
+/home/aladdin/demux/current
+```
+
+- Working on new datasheetToSamplesheet for cellranger
+
+```bash
+/home/aladdin/cellranger/bin/datasheetToSamplesheet.rb
+```
 
 ## Metrics to look at
 
