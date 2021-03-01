@@ -52,7 +52,7 @@ print('RUN_ID: ', args.run_id)
 if socket.gethostname() == 'spaceship':
   PATH_TO_YAML='/home/x1/Documents/Weill_Cornell/Spring_Project/stuff_to_sftp/config.yml'
 else: 
-  PATH_TO_YAML='/home/aladdin/cellranger/bin/config.yml'
+  PATH_TO_YAML='/home/aladdin/sequencing_monitor/current/config/config.yml'
 
 # Remove lines containing ruby specific info
 lines=[]
@@ -62,6 +62,8 @@ with open(PATH_TO_YAML,) as yaml_file:
       lines.append(line)
 
 config_data = yaml.safe_load(''.join(lines))
+
+print(config_data.keys())
 
 # >>> config_data.keys()
 # dict_keys(['epicore09.pbtech', 'epicore04.med.cornell.edu', 
@@ -79,10 +81,11 @@ if socket.gethostname() == 'spaceship':
   with open(json_file, 'r') as f: 
     data = json.load(f)
 else: 
-  get_flowcell_cmd = "curl" + \
+  get_flowcell_cmd = "curl " + \
       "https://abc.med.cornell.edu/epilims/rest/SeqmonDatasheet?run_id=" + args.run_id
   direct_output = subprocess.check_output(get_flowcell_cmd, shell=True)
   data = json.loads(direct_output)
+
 
 # Goal: Find experiment names of all libraries
 # with the same iLab service id
@@ -126,32 +129,32 @@ def find_prefixes(library_names):
 def filter_sets(potential_sets):
   accepted_sets = {}
   accepted_suffix_list = ['gex', 'ig', 'fb']
-
+  
   for key in potential_sets.keys():
     accepted_sets[key] = []
-
+  
   for key, potential_set in potential_sets.items(): 
     for lib_name in potential_set: 
       lib_name_suffix = ''.join(lib_name.split('-')[1:]).lower()
       suffix_mask = [x in lib_name_suffix for x in accepted_suffix_list]
-
+      
       if sum(suffix_mask) == 1: 
         accepted_sets[key].append(lib_name)
-
+    
     if len(accepted_sets[key]) < 2: del accepted_sets[key]
-
   return accepted_sets
 
 def find_similar(library_names): 
   prefixes = find_prefixes(library_names)
   sets = {} 
   for prefix in prefixes: sets[prefix] = []
-
+  
   for lib_name in library_names: 
     lib_base_name = lib_name.split('-')[0]
+    
     if lib_base_name in prefixes: 
       sets[lib_base_name].append(lib_name)
-
+  
   return filter_sets(sets)
 
 
@@ -229,7 +232,6 @@ def determine_reference_from_config_data(config_data):
     organism_scientific="Homo_sapiens"
 
   return organism_scientific
-
 
 
 for acc_set in accepted_sets.values(): 
