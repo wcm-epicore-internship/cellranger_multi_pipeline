@@ -23,40 +23,36 @@
 
 
 import os
-from posix import listdir 
 import sys
 import csv
 import yaml
 import json 
 import getopt
+import socket
+import argparse
+import subprocess
+import regex as re
 
 
-run_id=""
-gex_reference=""
-vdj_reference=""
+# Create the parser and add arguments
+parser = argparse.ArgumentParser(description='Generate a cellranger multi sample csv sheet.')
 
-try:
-    opts, args = getopt.getopt(sys.argv,"hrgv:o:",
-                      ["run_id=","gex_reference=","vdj_reference="])
-except getopt.GetoptError:
-    print('json_to_csv_sample_sheet.py -g <gex_reference> -v <vdj_reference>')
-    sys.exit(2)
-for opt, arg in opts:
-    if opt == '-h':
-      print('json_to_csv_sample_sheet.py -g <gex_reference> -v <vdj_reference>')
-      sys.exit()
-    elif opt in ("-r", "--run_id"):
-      run_id = arg
-    elif opt in ("-g", "--gex_reference"):
-      gex_reference = arg
-    elif opt in ("-v", "--vdj_reference"):
-      vdj_reference = arg
+parser.add_argument('--run_id', type=str, 
+    required=True, help='run_id to retrieve flowcell_design.json from')
 
-print("run_id: ", run_id)
-print("gex_refernce: ", gex_reference)
-print("vdj_reference: ", vdj_reference)
+parser.add_argument('--reference_csv_list', 
+                    help='references to be used for each experiment')
 
-PATH_TO_YAML='stuff_to_sftp/config.yml'
+args = parser.parse_args()
+print('RUN_ID: ', args.run_id)
+
+
+
+## TODO: Remove after development
+if socket.gethostname() == 'spaceship':
+  PATH_TO_YAML='/home/x1/Documents/Weill_Cornell/Spring_Project/stuff_to_sftp/config.yml'
+else: 
+  PATH_TO_YAML='/home/aladdin/cellranger/bin/config.yml'
 
 # Remove lines containing ruby specific info
 lines=[]
@@ -65,23 +61,28 @@ with open(PATH_TO_YAML,) as yaml_file:
     if not '!ruby/regexp' in line:
       lines.append(line)
 
-config_data = yaml.load(''.join(lines))
+config_data = yaml.safe_load(''.join(lines))
 
 # >>> config_data.keys()
 # dict_keys(['epicore09.pbtech', 'epicore04.med.cornell.edu', 
 # ':alerts', ':brand', ':app', ':seqbrowser', ':illumina_report', 
 # ':maintenance', ':roles', ':repository', ':mail', ':jobs', ':pipelines'])
 
+## TODO: Should I even be curling for this? Maybe I can get just as 
+# a filepath and get it on the system. This does work though as 
+# only with a run_id I can curl without saving a file and load into 
+# a python dict
 
-flowcell_design_file =  run_id + "_flowcelldesign.json"
-
-get_flowcell_cmd = "curl -o " + flowcell_design_file + \
-  " https://abc.med.cornell.edu/epilims/rest/SeqmonDatasheet?run_id=" + run_id
-
-os.system(get_flowcell_cmd)
-
-with open(flowcell_design_file,) as f:
-  data = json.load(f) 
+# TODO: Remove after development
+if socket.gethostname() == 'spaceship':
+  json_file = "/home/x1/Documents/Weill_Cornell/Spring_Project/working_flowcelldesign.json"
+  with open(json_file, 'r') as f: 
+    data = json.load(f)
+else: 
+  get_flowcell_cmd = "curl" + \
+      "https://abc.med.cornell.edu/epilims/rest/SeqmonDatasheet?run_id=" + args.run_id
+  direct_output = subprocess.check_output(get_flowcell_cmd, shell=True)
+  data = json.loads(direct_output)
 
 # Goal: Find experiment names of all libraries
 # with the same iLab service id
@@ -110,13 +111,9 @@ for uniq_serv_id in unique_service_ids:
   service_id_groups[uniq_serv_id] = cur_group
 
 
-# Have determined groups by ilab service id, now
-# for each group of iLabService id runs, lets check 
+# Have determined groups by iLab_Service_ID, now
+# for each group of iLab_Service_IDs, lets check 
 # if we have any vdj, gex combinations
-
-# TODO: Want this to be able to incorporate feature barcoding 
-# too, so might have to use a different design pattern than 
-# this 
 
 def find_prefixes(library_names):
   prefixes = set()
@@ -171,34 +168,32 @@ accepted_sets = {k:v for x in accepted_sets for k,v in x.items()}
 # Now for each pair in the accepted_pairs, list, form the sample
 # sheet and command needed for cellranger multi 
 
-
 ## TODO: write to include feature barcoding if we want. For now
 # going to make it a lot easier to just support VDJ + Gex always
 
 def generate_sample_sheet_for_set(exp_names, fastqs, gex_ref_path, vdj_ref_path):
   fields = ['fastq_id',	'fastqs',	'lanes', 'feature_types']
+
+  filename='cellranger_config_csvs/cellranger_multi_config_' + exp_names[0] + \
+            '_' + exp_names[1] + '.csv'
       
   with open(filename, 'w') as csvfile:  
       csvwriter = csv.writer(csvfile)
-      csv.writerow(['[gene-expression]'])
-      csv.writerow(['reference', gex_ref_path])
-      csv.writerow(['[vdj]'])  
-      csv.writerow(['reference', vdj_ref_path])  
+      csvwriter.writerow(['[gene-expression]', '', '', ''])
+      csvwriter.writerow(['reference', gex_ref_path, '', ''])
+      csvwriter.writerow(['[vdj]', '', '', ''])  
+      csvwriter.writerow(['reference', vdj_ref_path, '', ''])  
       csvwriter.writerow(fields)  
       for i in range(len(exp_names)):
-        if 'ig' in exp_set[i].lower(): 
+        if 'ig' in exp_names[i].lower(): 
           feature_type = 'vdj'
         else:
-          feature_type='gene-expression'
-        csvwriter.writerow([exp_names[i]], fastqs[i], ' ', feature_type) 
+          feature_type='gene expression'
+        csvwriter.writerow([exp_names[i], fastqs[exp_names[i]], ' ', feature_type]) 
+
 
 # Get Fastq files 
-# TODO: Ask Thadeous for the best way to do this, other than 
-# getting fastq files and figuring out how to choose the reference
-# when building multiple cellranger multi runs from a single file
-# then this could actually be a working utility that can recieve arguments
-# as input and produce everything needed for a cellranger multi 
-# command to run 
+# TODO: Ask Thadeous for the best way to do this
 
 def fetch_fastq_file_names(run_id, exp_name): 
   file_systems = config_data['epicore09.pbtech'][':filesystems'][':analysis']
@@ -213,17 +208,39 @@ def fetch_fastq_file_names(run_id, exp_name):
   print(relevant_dirs)
 
 
+def determine_reference_from_config_data(config_data): 
+  cell_ranger_count = config_data[":pipelines"][":cellranger_count"]
+  cell_ranger_vdj = config_data[":pipelines"][":cellranger_vdj"]
+  count_ref_seqs = cell_ranger_count[":genomes"]
+  count_lib_entry = libs[map_name_to_key(gex_exp_name)]
+  count_genome_dir = cell_ranger_count[':genomedir']
+  vdj_genome_dir = cell_ranger_vdj[':genomedir']
+  count_ref_seqs = cell_ranger_vdj[":genomes"]
+  vdj_ref_seqs = cell_ranger_vdj[':genomes']
+
+
+  organism = count_lib_entry['Organism'].lower()
+  genome_build = count_lib_entry['Genome_Build']
+  library_type = count_lib_entry['Library_Type']
+
+  if ('mouse' in organism) or ('mus' in organism):
+    organism_scientific = "Mus_musculus"
+  elif ('human' in organism) or ('homo' in organism): 
+    organism_scientific="Homo_sapiens"
+
+  return organism_scientific
+
+
+
 for acc_set in accepted_sets.values(): 
 
-  # Determine which experiment is the vdj and which 
-  # is the gene expression 
+  print("Processing experimet pair: ", acc_set)
+
   vdj_exp_name = [x for x in acc_set if 
         re.search('ig|vdj', x.lower()) is not None][0]
 
   gex_exp_name = [x for x in acc_set if 
         re.search('gex', x.lower()) is not None][0]
-
-  fastq_files = []
 
   # TODO: 
   # get reference files: 
@@ -235,28 +252,18 @@ for acc_set in accepted_sets.values():
 
   cell_ranger_count = config_data[":pipelines"][":cellranger_count"]
   cell_ranger_vdj = config_data[":pipelines"][":cellranger_vdj"]
-  count_ref_seqs = cell_ranger_count[":genomes"]
-  count_lib_entry = libs[map_name_to_key(gex_exp_name)]
   count_genome_dir = cell_ranger_count[':genomedir']
   vdj_genome_dir = cell_ranger_vdj[':genomedir']
-  count_ref_seqs = cell_ranger_vdj[":genomes"]
-  vdj_ref_seqs = cell_ranger_vdj[':genomes']
 
-
-  organism = lib_entry['Organism'].lower()
-  genome_build = lib_entry['Genome_Build']
-  library_type = lib_entry['Library_Type']
-
-  if ('mouse' in organism) or ('mus' in organism):
-    organism_scientific = "Mus_musculus"
-  elif ('human' in organism) or ('homo' in organism): 
-    organism_scientific="Homo_sapiens"
+  organism_scientific = determine_reference_from_config_data(config_data)
 
   gex_ref_path = count_genome_dir + '/' + organism_scientific 
   vdj_ref_path = vdj_genome_dir + '/' + organism_scientific
-  
 
+  fastq_files = {gex_exp_name: "fastq_for_gex.fastq", 
+                 vdj_exp_name: "fastq_for_vdj.fastq"}
 
-  fastq_files.append(fetch_fastq_file_names(run_id, exp_name))
+  # fastq_files = fetch_fastq_file_names(args.run_id, exp_name)
+
   generate_sample_sheet_for_set(acc_set, fastq_files, gex_ref_path, vdj_ref_path)
   
