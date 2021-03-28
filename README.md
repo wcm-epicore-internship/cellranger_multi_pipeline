@@ -1,17 +1,17 @@
-# CellRanger multi pipeline
+# **CellRanger multi pipeline**
 
 For the fulfillment of independent research credit by **Jake Sauter**
 
 [Slideshow Presentation](Presentation/Cellranger_Multi_Pipeline.pdf)
 
-## Introduction
+## **Introduction**
 
 [Cellranger Multi](https://support.10xgenomics.com/single-cell-vdj/software/pipelines/latest/using/multi) is a software pipeline implemented by 10X genomics for processing parallel single-cell assays performed on transcripts or features originating from the same initial population of cells.
 
 Particularly this has shown to be useful for [10X's Single-Cell Immune Profiling assays](https://support.10xgenomics.com/single-cell-vdj/software/pipelines/latest/what-is-cell-ranger) (Single Cell V(D)J + 5′ Gene Expression + Feature Barcode Technology) in which V(D)J transcripts and clonotypes for T and B cells, 5' gene expression and cell surface proteins or antigen specificity can all be assessed **for the same cell**.
 
 
-## Interactive server
+## **Interactive server**
 
 In order to develop and test the work done for this project, the
 `epicore08.pbtech` interactive server was used. Below are instructions of how to access this interactive server, where `$CWID` is the user's assigned account name on the system.
@@ -30,7 +30,7 @@ Local scratch workspace was used during processing steps on `epicore08.pbtech` a
 /scratch001/$USER
 ```
 
-## Development Dataset
+## **Development Dataset**
 
 Six samples were used while developing this project, consisting of 5'gene expression and VDJ assays for each sample. The original `FastQ` files for the project can be found on the `Athena` file server: 
 
@@ -38,9 +38,9 @@ Six samples were used while developing this project, consisting of 5'gene expres
 /athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974/Project_EC-LV-6398
 ```
 
-## Cellranger Commands
+## **Cellranger Commands**
 
-### Cellranger Count
+### **Cellranger Count**
 
 ```bash
 /opt/cellranger-5.0.0/bin/cellranger count \
@@ -51,7 +51,7 @@ Six samples were used while developing this project, consisting of 5'gene expres
 
 ```
 
-### Cellranger VDJ
+### **Cellranger VDJ**
 
 ```bash
 /opt/cellranger-5.0.0/bin/cellranger vdj \
@@ -62,7 +62,7 @@ Six samples were used while developing this project, consisting of 5'gene expres
 ```
 
 
-### Cellranger Multi
+### **Cellranger Multi**
 
 In order to run `cellranger multi` to perform both VDJ and Gene Expression analysis on the same sample, we first must generate a `cellranger mutli` specific configuration CSV file. This configuration
 file instructs `cellranger multi` which references to use, which 
@@ -88,7 +88,7 @@ cellranger multi --id=CTRL_1-Ig_Gex \
     --disable-ui > cellranger_ctrl_1_multi_output.txt 2>&1
 ```
 
-## Cellranger Multi Validation
+## **Cellranger Multi Validation**
 
 In order to ensure that `cellranger multi` produced similar results to the `cellranger count` and `cellranger vdj` pipelines currently used in Epicore analyses, I have ran the prior mentioned samples through both pipelines, and was able to directly access the barcodes. 
 
@@ -142,7 +142,7 @@ CTRL_1-Ig.mri.tgz  _finalstate  _jobmode     _mrosource  _perf  _sitecheck      
 
 ```
 
-### Analysis results from the `R/cell_barcodes.rmd`: 
+### **Analysis results from the `R/cell_barcodes.rmd`**
 
 From the below results, we confirm that the only difference in output cells called between using the `cellranger count` and `cellranger vdj` commands and the `cellranger multi` command is in the fact that `cellranger multi` ensures that `cellranger vdj` called cells are indeed also called cells with `cellranger count`, being a more powerful assay for determining if a cell was actually contained in a 10X GEM well due to more abundant transcripts. 
 
@@ -176,7 +176,7 @@ cat('Number of vdj called cells from cellranger vdj, filtered by cellranger coun
 
 
 
-## Automating Cellranger Multi
+## **Automating Cellranger Multi**
 
 In order to automate the above process of calling `cellranger multi` for a particular paired analysis, the process of making the CSV sample sheet had to first be automated. For a first iteration, this has been implemented in `Python3`
 
@@ -186,13 +186,56 @@ In order to automate the above process of calling `cellranger multi` for a parti
 
 Due to the new nature of possibly multiple paired assays on the same flowcell run, (or possibly different flowcell runs), the existing system architecture must be slightly modified to allow for a `bio_sample_id` (or a similar field) in order to identify these assays that are derived from the same tissue and single cells. At the time of this project this architecture was identified to be required for proper automation of the `cellranger multi` pipeline internally, though for proof-of-concept paired assays were assumed to be run during the same flowcell sequencing run, and to have a designated naming format (E.g. `Ctrl_1-GEX`, `Ctrl_1-Ig` for gene expression and vdj analysis on the `Ctrl_1` sample)
 
+
+### **Parsing Flowcell Design**
+
+When a sequncing run occurs on the current Epilims system, the "flowcell design", being information about all the samples being sequenced on the current flowcell, can be accessed in the following way given the experiment's `run_id`
+
+```bash
+curl -o flowcell_design.json https://abc.med.cornell.edu/epilims/rest/SeqmonDatasheet?run_id=201028_A00814_0296_AHVKWTDMXX
+```
+
+Observing the **libraries** entry for our example sample in the json object, we can see all the information available to us through this json file
+
+```bash
+     "262885": {
+      "ID": 262885,
+      "Status ID": 1,
+      "Status": "Published",
+      "User ID": 32,
+      "User": "Piali Mukherjee",
+      "Library_Made_By": "Yushan Li",
+      "Date_Library_Prepared": "2020-10-05",
+      "Microbiome_Sequencing_Request": null,
+      "Sequencing_Request": 262870,
+      "Genome_Build": "mm10",
+      "Barcode_Index": "SI-GA-A11",
+      "Barcode_Kit": "Chromium i7 Multiplex Kit",
+      "Library_assay": "cellranger-5de",
+      "Library_Name": "CTRL_1-GEX",
+      "Sample_Number": 1,
+      "Library_Type": "cellranger-5de",
+      "Organism": "mouse",
+      "PI": "Ari Melnick",
+      "Submitter_E-mail": "lev2009@med.cornell.edu",
+      "iLab_Service_ID": "EC-LV-6398",
+      "Demuxware": "cellranger3.0",
+      "Alignment_Requested": "Yes",
+      "Data_Processing_Instructions": null
+    }
+```
+
+From this entry, we can retrieve the `Library_Name`, `Library_assay`, `Organism` and `Genome Build` in order to assist the automated processing of the sample. As previously mentioned, the `Library_Name` is currently being used to find paired assays. Furthermore, `Library_assay` can be used to map to the needed **feature_type** column of the `cellranger_multi_config.csv` file, and the combination of `Organism` and `Genome` build will allow us to pick the proper genome to use as the [gene-expression] and [vdj] **reference** section.
+
+
+
 ### **Retrieving Sample FastQ Files**
 
 Currently in progress. Need to be able to access processed `demux`'d `fastq` files given a `project_id`.
 
 
 
-## Sequencing monitor
+## **Sequencing monitor**
 
 
 During the timing of this project, the Epicore team
@@ -208,3 +251,8 @@ The source-code and documentation for this tool are accessible on the WCM file s
 **Configuration file**: `/home/aladdin/sequencing_monitor/current/config/config.yml`
 
 **Example for cellranger count pipeline**: `/home/aladdin/sequencing_monitor/current/job_templates/cellranger_count/cellranger_count.qsub`
+
+
+## **Sequencing Monitor SQL API**
+
+In order to retrieve the 
