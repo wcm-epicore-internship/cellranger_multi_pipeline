@@ -49,7 +49,7 @@ Local scratch workspace was used during processing steps on `epicore08.pbtech` a
 
 ## **Development Dataset**
 
-Six samples were used while developing this project, consisting of 5'gene expression and VDJ assays for each sample. The original `FastQ` files for the project can be found on the `Athena` file server: 
+Six samples were used while developing this project, consisting of 5' gene expression and VDJ assays for each sample. The original `FastQ` files for the project can be found on the `Athena` file server: 
 
 ``` {.bash}
 /athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974/Project_EC-LV-6398
@@ -57,7 +57,7 @@ Six samples were used while developing this project, consisting of 5'gene expres
 
 ## **Cellranger Commands**
 
-Prior to the release of `cellranger mutli`,  in order to process V(D)J T-cell and B-cell repetoires as well as transcriptome-wide gene counts, the user had to run `cellranger count` on the transcriptome-wide library, followed by `cellranger vdj` on the TCR and BCR enriched libraries. Below we see the previouslyy used commands for samples `CTRL_1-GEX` and `CTRL_1-Ig`.
+Prior to the release of `cellranger mutli`,  in order to process V(D)J T-cell and B-cell repetoires as well as transcriptome-wide gene counts, the user had to run `cellranger count` on the transcriptome-wide library, followed by `cellranger vdj` on the TCR and BCR enriched libraries. Below we see the previously used commands for samples `CTRL_1-GEX` and `CTRL_1-Ig`.
 
 ### **Cellranger Count**
 
@@ -89,8 +89,10 @@ assays we have performed, and where the `FastQ` files for these
 assays can be located on the local filesystem. An example of this
 CSV file can be seen below 
 
-|<span style="font-weight:normal">[gene-expression]</span>|                                                                                |      |         |
+
+|    |         |      |         |
 |-----------------|--------------------------------------------------------------------------------|------|---------------|
+| [gene-expression] | | | 
 |reference        |/athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-gex-mm10-2020-A|      |               |
 |[vdj]            |                                                                                |      |               |
 |reference        |/athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-gex-mm10-2020-A|      |               |
