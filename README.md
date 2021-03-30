@@ -4,6 +4,23 @@ For the fulfillment of independent research credit by **Jake Sauter**
 
 [Slideshow Presentation](Presentation/Cellranger_Multi_Pipeline.pdf)
 
+* [Introduction](#Introduction)
+* [Interactive Server](#Interactive-Server)
+* [Development Dataset](#Development-Dataset)
+* [Cellranger Commands](#Cellranger-Commands)
+    - [Cellranger Count](#Cellranger-Count)
+    - [Cellranger VDJ](#Cellranger-VDJ)
+    - [Cellranger Multi](#Cellranger-Multi)   
+* [Cellranger Multi Validation](#Cellranger-Multi-Validation)
+    - [Analysis results from `R/cell_barcodes.rmd`](#Analysis-results-from-R/cell_barcodes.rmd)
+* [Automating Cellranger Multi](Automating-Cellranger-Multi)
+    - [Assumptions](#Assumptions)
+    - [Identifying Paired Assays](#Identifying-Paired-Assays)
+    - [Parsing Flowcell Design](#Parsing-Flowcell-Design)
+    - [Retrieving Sample FastQ Files](#Retrieving-Sample-FastQ-Files)
+    - [Forming Cellranger Multi Command](#Forming-Cellranger-Multi-Command)
+* [Sequencing Monitor](#Sequencing-Monitor)
+
 ## **Introduction**
 
 [Cellranger Multi](https://support.10xgenomics.com/single-cell-vdj/software/pipelines/latest/using/multi) is a software pipeline implemented by 10X genomics for processing parallel single-cell assays performed on transcripts or features originating from the same initial population of cells.
@@ -11,7 +28,7 @@ For the fulfillment of independent research credit by **Jake Sauter**
 Particularly this has shown to be useful for [10X's Single-Cell Immune Profiling assays](https://support.10xgenomics.com/single-cell-vdj/software/pipelines/latest/what-is-cell-ranger) (Single Cell V(D)J + 5′ Gene Expression + Feature Barcode Technology) in which V(D)J transcripts and clonotypes for T and B cells, 5' gene expression and cell surface proteins or antigen specificity can all be assessed **for the same cell**.
 
 
-## **Interactive server**
+## **Interactive Server**
 
 In order to develop and test the work done for this project, the
 `epicore08.pbtech` interactive server was used. Below are instructions of how to access this interactive server, where `$CWID` is the user's assigned account name on the system.
@@ -144,7 +161,7 @@ CTRL_1-Ig.mri.tgz  _finalstate  _jobmode     _mrosource  _perf  _sitecheck      
 
 ```
 
-### **Analysis results from the `R/cell_barcodes.rmd`**
+### **Analysis results from `R/cell_barcodes.rmd`**
 
 From the below results, we confirm that the only difference in output cells called between using the `cellranger count` and `cellranger vdj` commands and the `cellranger multi` command is in the fact that `cellranger multi` ensures that `cellranger vdj` called cells are indeed also called cells with `cellranger count`, being a more powerful assay for determining if a cell was actually contained in a 10X GEM well due to more abundant transcripts. 
 
@@ -290,7 +307,17 @@ Thus, the full fastq sample path needed to create a `cellranger multi` sample sh
 '/athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974/Sample_CTRL_1-GEX'
 ```
 
-## **Sequencing monitor**
+### **Forming Cellranger Multi Command**
+
+Finally, the output of running `json_to_csv_sample_sheet.py` is the following string, being a list of working commands to execute `cellranger mutli` on all idenfied paired assays in the given dataset.
+
+```python
+python3.6 json_to_csv_sample_sheet.csv
+
+{STILL UNDER DEVELOPMENT}
+```
+
+## **Sequencing Monitor**
 
 
 During the timing of this project, the Epicore team
