@@ -40,6 +40,8 @@ Six samples were used while developing this project, consisting of 5'gene expres
 
 ## **Cellranger Commands**
 
+Prior to the release of `cellranger mutli`,  in order to process V(D)J T-cell and B-cell repetoires as well as transcriptome-wide gene counts, the user had to run `cellranger count` on the transcriptome-wide library, followed by `cellranger vdj` on the TCR and BCR enriched libraries. Below we see the previouslyy used commands for samples `CTRL_1-GEX` and `CTRL_1-Ig`.
+
 ### **Cellranger Count**
 
 ```bash
@@ -70,14 +72,14 @@ assays we have performed, and where the `FastQ` files for these
 assays can be located on the local filesystem. An example of this
 CSV file can be seen below 
 
-|[gene-expression]|                                                                                |      |         |
+|<span style="font-weight:normal">[gene-expression]</span>|                                                                                |      |         |
 |-----------------|--------------------------------------------------------------------------------|------|---------------|
 |reference        |/athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-gex-mm10-2020-A|      |               |
 |[vdj]            |                                                                                |      |               |
 |reference        |/athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-gex-mm10-2020-A|      |               |
 |fastq_id         |fastqs                                                                          |lanes |feature_types  |
-|CTRL_1-GEX       |fastq_for_gex.fastq                                                             |      |gene expression|
-|CTRL_1-Ig        |fastq_for_vdj.fastq                                                             |      |vdj            |
+|CTRL_1-GEX       | /athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974/Project_EC-LV-6398/Sample_CTRL_1-GEX                                                             |      |gene expression|
+|CTRL_1-Ig        |/athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974/Project_EC-LV-6398/Sample_CTRL_1-Ig                                                              |      |vdj            |
 
 
 Once we have generated this configuration CSV, we can run `cellranger multi` the following way.
@@ -182,6 +184,18 @@ In order to automate the above process of calling `cellranger multi` for a parti
 
 [json_to_csv_sample_sheet.py](json_to_csv_sample_sheet.py)
 
+### **Assumptions**
+
+Due to the nature of `cellranger multi` analysis, putting together all the necessary components of a command can be difficult to automate. 
+
+**Paired Assays**
+
+A specific difficulty can be found in storing metadata that two libraries, potentially on different sequencers, are apart of a paired assay. Thus in order to first complete a working prototype of the automation, I will assume that this relationship is encoded in the names of the libraries, represented by the **exact same sample name**, followed by a dash along with the sample type indicator. (E.g. `CTRL_1-GEX`, `CTRL_1-Ig` for 5' gene expression and vdj library sequencing runs respectively)
+
+**Input**
+
+In order to properly be able to connect all aspects of the data needed to run a `cellranger mutli` analysis, input to `json_to_csv_sample_sheet.py` will be the **dataset uid** of the `sequencing_monitor` dataset that contains all samples in the paired analysis. (E.g. `demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974`)
+
 ### **Identifying Paired Assays**
 
 Due to the new nature of possibly multiple paired assays on the same flowcell run, (or possibly different flowcell runs), the existing system architecture must be slightly modified to allow for a `bio_sample_id` (or a similar field) in order to identify these assays that are derived from the same tissue and single cells. At the time of this project this architecture was identified to be required for proper automation of the `cellranger multi` pipeline internally, though for proof-of-concept paired assays were assumed to be run during the same flowcell sequencing run, and to have a designated naming format (E.g. `Ctrl_1-GEX`, `Ctrl_1-Ig` for gene expression and vdj analysis on the `Ctrl_1` sample)
@@ -189,15 +203,26 @@ Due to the new nature of possibly multiple paired assays on the same flowcell ru
 
 ### **Parsing Flowcell Design**
 
-When a sequncing run occurs on the current Epilims system, the "flowcell design", being information about all the samples being sequenced on the current flowcell, can be accessed in the following way given the experiment's `run_id`
+When a sequncing run occurs on the current Epilims system, the "flowcell design", being information about all the samples being sequenced on the current flowcell, can be accessed in the following way given the experiment's dataset uid.
 
 ```bash
-curl -o flowcell_design.json https://abc.med.cornell.edu/epilims/rest/SeqmonDatasheet?run_id=201028_A00814_0296_AHVKWTDMXX
+curl -o dataset_info.json \
+    https://abc.med.cornell.edu/sequencing_monitor/uid/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974.json
 ```
 
-Observing the **libraries** entry for our example sample in the json object, we can see all the information available to us through this json file
+Reading this json file into a `Python` dictionary, we can observe the **libraries** entry for our example sample in the json object. An entry in the dataset_info['job']['flowcell_des]
 
-```bash
+```python
+>>> get_flowcell_cmd = "curl https://abc.med.cornell.edu/sequencing_monitor/uid/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974.json"
+
+>>> direct_output = subprocess.check_output(get_flowcell_cmd, shell=True)
+
+>>> dataset_info = json.loads(direct_output)
+
+>>> flowcell_design = json.loads(dataset_info['job']['flowcell_design'])
+
+>>> print(json.dumps(flowcell_design['libraries']['262885'], indent = 2))
+
      "262885": {
       "ID": 262885,
       "Status ID": 1,
@@ -231,9 +256,39 @@ From this entry, we can retrieve the `Library_Name`, `Library_assay`, `Organism`
 
 ### **Retrieving Sample FastQ Files**
 
-Currently in progress. Need to be able to access processed `demux`'d `fastq` files given a `project_id`.
+We can also use the information gathered from the generation of the `dataset_info` python dictionary to compose the filepath of the samples that we have determined are paired, and should be run through the `cellranger multi` automated pipeline.
+
+```python
+>>> import os
+>>> os.path(dataset_info['dataset']['path'], 
+            dataset_info['dataset']['uid']) 
+
+/athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974
+```
+
+The `fastq` files corresponding to the libraries of the samples in the project can then be found under the `Project_{project_name}` directory, in the `Sample_{library_name}`
 
 
+![](imgs/project_dataset_availability.png)
+
+Note that the sample name can be accessed in our python object as follows
+
+```python
+>>> flowcell_design['libraries']['262885']['Library_Name']
+'CTRL_1-GEX'
+```
+
+Thus, the full fastq sample path needed to create a `cellranger multi` sample sheet for samples can be composed as
+
+```python
+>>> gex_exp_name = flowcell_design['libraries']['262885']['Library_Name']
+>>> 
+>>> os.path.join(dataset_info['dataset']['path'], 
+                 dataset_info['dataset']['uid'], 
+                 'Sample_' + gex_exp_name) 
+
+'/athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974/Sample_CTRL_1-GEX'
+```
 
 ## **Sequencing monitor**
 
@@ -252,7 +307,3 @@ The source-code and documentation for this tool are accessible on the WCM file s
 
 **Example for cellranger count pipeline**: `/home/aladdin/sequencing_monitor/current/job_templates/cellranger_count/cellranger_count.qsub`
 
-
-## **Sequencing Monitor SQL API**
-
-In order to retrieve the 
