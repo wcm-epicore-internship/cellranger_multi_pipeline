@@ -12,7 +12,7 @@ For the fulfillment of independent research credit by **Jake Sauter**
     - [Cellranger VDJ](#Cellranger-VDJ)
     - [Cellranger Multi](#Cellranger-Multi)   
 * [Cellranger Multi Validation](#Cellranger-Multi-Validation)
-    - [Analysis results from `R/cell_barcodes.rmd`](#Analysis-results-from-R/cell_barcodes.rmd)
+    - [Single-Cell Barcode Comparison](#Single-Cell-Barcode-Comparison)
 * [Automating Cellranger Multi](Automating-Cellranger-Multi)
     - [Assumptions](#Assumptions)
     - [Identifying Paired Assays](#Identifying-Paired-Assays)
@@ -163,7 +163,7 @@ CTRL_1-Ig.mri.tgz  _finalstate  _jobmode     _mrosource  _perf  _sitecheck      
 
 ```
 
-### **Single-Cell Barcode Results Confirmation**
+### **Single-Cell Barcode Comparison**
 
 Note that the full analysis can be found in [R/cell_barcodes.html](R/cell_barcodes.html) and was generated from the RMarkdown file [R/cell_barcodes.rmd](R/cell_barcodes.rmd).
 
