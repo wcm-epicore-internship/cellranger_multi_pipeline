@@ -122,7 +122,7 @@ _cmdline            _filelist    _invocation  _log        outs   SC_RNA_COUNTER_
 CTRL_1-GEX.mri.tgz  _finalstate  _jobmode     _mrosource  _perf  _sitecheck         _timestamp  _vdrkill
 ```
 Further inspecting this output directory, we can see that the `outs/` directory contains the `filtered_feature_bc_matrix` directory, which contains the feature x barcode matrix of the analysis, as well as a `barcodes.tsv` file with contains only the barcodes in the assay that contained cells.
-
+Analysis-results
 
 ``` bash
 [jns4001@epicore08 CTRL_1-GEX]$ ls outs/filtered_feature_bc_matrix
