@@ -163,7 +163,9 @@ CTRL_1-Ig.mri.tgz  _finalstate  _jobmode     _mrosource  _perf  _sitecheck      
 
 ```
 
-### **Analysis results from `R/cell_barcodes.rmd`**
+### **Single-Cell Barcode Results Confirmation**
+
+Note that the full analysis can be found in [R/cell_barcodes.html](R/cell_barcodes.html) and was generated from the RMarkdown file [R/cell_barcodes.rmd](R/cell_barcodes.rmd).
 
 From the below results, we confirm that the only difference in output cells called between using the `cellranger count` and `cellranger vdj` commands and the `cellranger multi` command is in the fact that `cellranger multi` ensures that `cellranger vdj` called cells are indeed also called cells with `cellranger count`, being a more powerful assay for determining if a cell was actually contained in a 10X GEM well due to more abundant transcripts. 
 
