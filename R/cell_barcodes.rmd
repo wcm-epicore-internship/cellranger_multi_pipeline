@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo = TRUE, comment=NA)
 library(magrittr)
 
 {
-  base_dir <- '/home/x1/Documents/Weill_Cornell/Spring_Project/storage/cell_barcodes/'
+  base_dir <- 'data/'
   
   ctrl_1_unfiltered_count_file <-  paste0(base_dir, 'ctrl_1_unfiltered_count_barcodes.tsv')
   ctrl_2_unfiltered_count_file <-  paste0(base_dir, 'ctrl_2_unfiltered_count_barcodes.tsv')
