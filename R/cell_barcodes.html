@@ -337,7 +337,7 @@ ctrl_1_multi_cell_barcodes &lt;- read.csv(ctrl_1_multi_count_file) %&gt;% unlist
 <h3><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></h3>
 <pre class="r"><code>cat(&#39;Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells: &#39;, length(intersect(ctrl_1_cell_barcodes, ctrl_1_vdj_barcodes)))</code></pre>
 <pre><code>Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells:  4408</code></pre>
-<p>**First we see that the cell barcodes returned from <code>cellranger multi</code> are the exact same barcodes returned from <code>cellranger count</code></p>
+<p><strong>First we see that the cell barcodes returned from <code>cellranger multi</code> are the exact same barcodes returned from <code>cellranger count</code></strong></p>
 <pre class="r"><code>ctrl_1_multi_cell_barcodes &lt;- sort(ctrl_1_multi_cell_barcodes)
 ctrl_1_cell_barcodes &lt;- sort(ctrl_1_cell_barcodes)
 

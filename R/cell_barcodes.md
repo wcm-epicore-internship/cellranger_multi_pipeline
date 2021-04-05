@@ -61,7 +61,7 @@ p1 / p2
 
 **As seen above, `cellranger multi` returns very consistent results compared to the previously used `cellranger vdj` command**
 
-## **Data Loading**
+## **Data Loading**###
 
 
 ```r
@@ -182,8 +182,7 @@ cat('Number of vdj called cells from cellranger vdj, filtered by cellranger coun
 Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells:  4408
 ```
 
-**First we see that the cell barcodes returned from `cellranger multi` are the 
-exact same barcodes returned from `cellranger count`
+**First we see that the cell barcodes returned from `cellranger multi` are the exact same barcodes returned from `cellranger count`**
 
 
 ```r

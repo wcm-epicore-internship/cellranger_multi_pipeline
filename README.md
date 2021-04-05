@@ -173,32 +173,99 @@ From the below results, we confirm that the only difference in output cells call
 
 This confirmation is shown as **4408** VDJ active cells were called when using `cellranger multi`, and the same number were found to be contained in the intersection of cell barcodes called both as VDJ active with `cellranger vdj`, as well as called as containing a cell with `cellranger count`.
 
+
+**Sample Ctrl_1 Validation**
+
+
 ```r
+ctrl_1_full_barcodes <- read.csv(ctrl_1_unfiltered_count_file) %>% unlist()
+ctrl_1_cell_barcodes <- read.csv(ctrl_1_count_file) %>% unlist()
+ctrl_1_vdj_barcodes <- rjson::fromJSON(file=ctrl_1_vdj_file) %>% unlist()
+ctrl_1_multi_vdj_barcodes <- rjson::fromJSON(file=ctrl_1_multi_vdj_file) %>% unlist()
+ctrl_1_multi_cell_barcodes <- read.csv(ctrl_1_multi_count_file) %>% unlist()
+```
+
+**Total 10X Cell Barcode Count**
+
+
+```r
+cat('Number of unfiltered barcodes: ', length(ctrl_1_full_barcodes), '\n')
 cat('Number of cell-associated barcodes: ', length(ctrl_1_cell_barcodes))
 ```
 
-**Number of cell-associated barcodes:  9927**
+```
+Number of unfiltered barcodes:  737279 
+Number of cell-associated barcodes:  9927
+```
+
+**Cellranger Count Called Cell Barcodes**
 
 
 ```r
-cat('Number cells called from cellranger vdj: ', length(ctrl_1_vdj_barcodes), '\n')
+if (length(setdiff(ctrl_1_cell_barcodes, ctrl_1_full_barcodes)) == 0) {
+  cat('All cell-associated barcodes found within unfiltered barcodes\n')
+}
 ```
 
-**Number cells called from `cellranger vdj`:  4504**
+```
+All cell-associated barcodes found within unfiltered barcodes
+```
+
+
+**Cellranger VDJ vs Cellranger Muli Called Cell Barcodes**
+
 
 ```r
-cat('Number of vdj called cells with cellranger multi: ', length(ctrl_1_multi_vdj_barcodes))
+cat('Number of vdj called cells: ', length(ctrl_1_vdj_barcodes), '\n')
+cat('Number of vdj called cells (with multi): ', length(ctrl_1_multi_vdj_barcodes))
 ```
 
-**Number of vdj called cells with `cellranger multi`:  4408**
+```
+Number of vdj called cells:  4504 
+Number of vdj called cells (with multi):  4408
+```
+
+**Cellranger Count vs Cellranger VDJ Called Cell Barcodes**
 
 
 ```r
 cat('Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells: ', length(intersect(ctrl_1_cell_barcodes, ctrl_1_vdj_barcodes)))
 ```
 
-**Number of `cellranger vdj` called cells from cellranger vdj, filtered by `cellranger count` called cells:  4408**
+```
+Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells:  4408
+```
 
+**First we see that the cell barcodes returned from `cellranger multi` are the 
+exact same barcodes returned from `cellranger count`**
+
+
+```r
+ctrl_1_multi_cell_barcodes <- sort(ctrl_1_multi_cell_barcodes)
+ctrl_1_cell_barcodes <- sort(ctrl_1_cell_barcodes)
+
+all(ctrl_1_multi_cell_barcodes == ctrl_1_cell_barcodes)
+```
+
+```
+[1] TRUE
+```
+
+**Now we see that we can achieve the same result as `cellranger multi`  by filtering cell barcodes from `cellranger vdj` to only cell barcodes called with `cellranger count`**
+
+
+```r
+ctrl_1_multi_vdj_barcodes <- sort(ctrl_1_multi_vdj_barcodes)
+
+manual_filtered_barcodes <- intersect(ctrl_1_cell_barcodes, ctrl_1_vdj_barcodes)
+manual_filtered_barcodes <- sort(manual_filtered_barcodes)
+
+all(ctrl_1_multi_vdj_barcodes == manual_filtered_barcodes)
+```
+
+```
+[1] TRUE
+```
 
 
 ## **Automating Cellranger Multi**
