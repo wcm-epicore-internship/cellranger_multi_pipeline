@@ -111,7 +111,9 @@ cellranger multi --id=CTRL_1-Ig_Gex \
 
 ## **Cellranger Multi Validation**
 
-In order to ensure that `cellranger multi` produced similar results to the `cellranger count` and `cellranger vdj` pipelines currently used in Epicore analyses, I have ran the prior mentioned samples through both pipelines, and was able to directly access the barcodes. 
+In order to ensure that `cellranger multi` produced similar results to the `cellranger count` and `cellranger vdj` pipelines currently used in Epicore analyses, I have ran the prior mentioned samples through both pipelines, and was able to directly access the 10X single-cell barcodes. 
+
+**Script containing all commands**: [cellranger_multi_validation.sh](Bash/cellranger_multi_validation.sh)
 
 Firstly, viewing the output directory of `cellranger count`, we can see that the **outs** directory is contained directly in the command output. 
 
