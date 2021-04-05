@@ -170,7 +170,57 @@ pre code {
 
 </div>
 
+<div id="TOC">
+<ul>
+<li><a href="#data-loading"><strong>Data Loading</strong></a></li>
+<li><a href="#sample-ctrl_1-validation"><strong>Sample Ctrl_1 Validation</strong></a>
+<ul>
+<li><a href="#total-10x-cell-barcode-count"><strong>Total 10X Cell Barcode Count</strong></a></li>
+<li><a href="#cellranger-count-called-cell-barcodes"><strong>Cellranger Count Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-vdj-vs-cellranger-muli-called-cell-barcodes"><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-count-vs-cellranger-vdj-called-cell-barcodes"><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></a></li>
+</ul></li>
+<li><a href="#sample-ctrl_2-validation"><strong>Sample Ctrl_2 Validation</strong></a>
+<ul>
+<li><a href="#total-10x-cell-barcode-count-1"><strong>Total 10X Cell Barcode Count</strong></a></li>
+<li><a href="#cellranger-count-called-cell-barcodes-1"><strong>Cellranger Count Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-vdj-vs-cellranger-muli-called-cell-barcodes-1"><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-count-vs-cellranger-vdj-called-cell-barcodes-1"><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></a></li>
+</ul></li>
+<li><a href="#sample-ctrl_3-validation"><strong>Sample Ctrl_3 Validation</strong></a>
+<ul>
+<li><a href="#total-10x-cell-barcode-count-2"><strong>Total 10X Cell Barcode Count</strong></a></li>
+<li><a href="#cellranger-count-called-cell-barcodes-2"><strong>Cellranger Count Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-vdj-vs-cellranger-muli-called-cell-barcodes-2"><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-count-vs-cellranger-vdj-called-cell-barcodes-2"><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></a></li>
+</ul></li>
+<li><a href="#sample-myd88_1-validation"><strong>Sample MYD88_1 Validation</strong></a>
+<ul>
+<li><a href="#total-10x-cell-barcode-count-3"><strong>Total 10X Cell Barcode Count</strong></a></li>
+<li><a href="#cellranger-count-called-cell-barcodes-3"><strong>Cellranger Count Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-vdj-vs-cellranger-muli-called-cell-barcodes-3"><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-count-vs-cellranger-vdj-called-cell-barcodes-3"><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></a></li>
+</ul></li>
+<li><a href="#sample-myd88_2-validation"><strong>Sample MYD88_2 Validation</strong></a>
+<ul>
+<li><a href="#total-10x-cell-barcode-count-4"><strong>Total 10X Cell Barcode Count</strong></a></li>
+<li><a href="#cellranger-count-called-cell-barcodes-4"><strong>Cellranger Count Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-vdj-vs-cellranger-muli-called-cell-barcodes-4"><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-count-vs-cellranger-vdj-called-cell-barcodes-4"><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></a></li>
+</ul></li>
+<li><a href="#sample-myd88_3-validation"><strong>Sample MYD88_3 Validation</strong></a>
+<ul>
+<li><a href="#total-10x-cell-barcode-count-5"><strong>Total 10X Cell Barcode Count</strong></a></li>
+<li><a href="#cellranger-count-called-cell-barcodes-5"><strong>Cellranger Count Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-vdj-vs-cellranger-muli-called-cell-barcodes-5"><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></a></li>
+<li><a href="#cellranger-count-vs-cellranger-vdj-called-cell-barcodes-5"><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></a></li>
+</ul></li>
+<li><a href="#conclusion"><strong>Conclusion</strong></a></li>
+</ul>
+</div>
 
+<div id="data-loading" class="section level2">
+<h2><strong>Data Loading</strong></h2>
 <pre class="r"><code>library(magrittr)
 
 {
@@ -211,25 +261,324 @@ pre code {
   myd88_2_multi_count_file &lt;- paste0(base_dir, &#39;myd88_2_multi_count_barcodes.tsv&#39;)
   myd88_3_multi_count_file &lt;- paste0(base_dir, &#39;myd88_3_multi_count_barcodes.tsv&#39;)
 }</code></pre>
+</div>
+<div id="sample-ctrl_1-validation" class="section level2">
+<h2><strong>Sample Ctrl_1 Validation</strong></h2>
 <pre class="r"><code>ctrl_1_full_barcodes &lt;- read.csv(ctrl_1_unfiltered_count_file) %&gt;% unlist()
 ctrl_1_cell_barcodes &lt;- read.csv(ctrl_1_count_file) %&gt;% unlist()
 ctrl_1_vdj_barcodes &lt;- rjson::fromJSON(file=ctrl_1_vdj_file) %&gt;% unlist()
 ctrl_1_multi_vdj_barcodes &lt;- rjson::fromJSON(file=ctrl_1_multi_vdj_file) %&gt;% unlist()
 ctrl_1_multi_cell_barcodes &lt;- read.csv(ctrl_1_multi_count_file) %&gt;% unlist()</code></pre>
+<div id="total-10x-cell-barcode-count" class="section level3">
+<h3><strong>Total 10X Cell Barcode Count</strong></h3>
 <pre class="r"><code>cat(&#39;Number of unfiltered barcodes: &#39;, length(ctrl_1_full_barcodes), &#39;\n&#39;)</code></pre>
 <pre><code>Number of unfiltered barcodes:  737279 </code></pre>
 <pre class="r"><code>cat(&#39;Number of cell-associated barcodes: &#39;, length(ctrl_1_cell_barcodes))</code></pre>
 <pre><code>Number of cell-associated barcodes:  9927</code></pre>
+</div>
+<div id="cellranger-count-called-cell-barcodes" class="section level3">
+<h3><strong>Cellranger Count Called Cell Barcodes</strong></h3>
 <pre class="r"><code>if (length(setdiff(ctrl_1_cell_barcodes, ctrl_1_full_barcodes)) == 0) {
   cat(&#39;All cell-associated barcodes found within unfiltered barcodes\n&#39;)
 }</code></pre>
 <pre><code>All cell-associated barcodes found within unfiltered barcodes</code></pre>
+</div>
+<div id="cellranger-vdj-vs-cellranger-muli-called-cell-barcodes" class="section level3">
+<h3><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></h3>
 <pre class="r"><code>cat(&#39;Number of vdj called cells: &#39;, length(ctrl_1_vdj_barcodes), &#39;\n&#39;)</code></pre>
 <pre><code>Number of vdj called cells:  4504 </code></pre>
 <pre class="r"><code>cat(&#39;Number of vdj called cells (with multi): &#39;, length(ctrl_1_multi_vdj_barcodes))</code></pre>
 <pre><code>Number of vdj called cells (with multi):  4408</code></pre>
+</div>
+<div id="cellranger-count-vs-cellranger-vdj-called-cell-barcodes" class="section level3">
+<h3><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></h3>
 <pre class="r"><code>cat(&#39;Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells: &#39;, length(intersect(ctrl_1_cell_barcodes, ctrl_1_vdj_barcodes)))</code></pre>
 <pre><code>Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells:  4408</code></pre>
+<p>**First we see that the cell barcodes returned from <code>cellranger multi</code> are the exact same barcodes returned from <code>cellranger count</code></p>
+<pre class="r"><code>ctrl_1_multi_cell_barcodes &lt;- sort(ctrl_1_multi_cell_barcodes)
+ctrl_1_cell_barcodes &lt;- sort(ctrl_1_cell_barcodes)
+
+all(ctrl_1_multi_cell_barcodes == ctrl_1_cell_barcodes)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<p><strong>Now we see that we can achieve the same result as <code>cellranger multi</code> by filtering cell barcodes from <code>cellranger vdj</code> to only cell barcodes called with <code>cellranger count</code></strong></p>
+<pre class="r"><code>ctrl_1_multi_vdj_barcodes &lt;- sort(ctrl_1_multi_vdj_barcodes)
+
+manual_filtered_barcodes &lt;- intersect(ctrl_1_cell_barcodes, ctrl_1_vdj_barcodes)
+manual_filtered_barcodes &lt;- sort(manual_filtered_barcodes)
+
+all(ctrl_1_multi_vdj_barcodes == manual_filtered_barcodes)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<div id="sample-ctrl_2-validation" class="section level2">
+<h2><strong>Sample Ctrl_2 Validation</strong></h2>
+<pre class="r"><code>ctrl_2_full_barcodes &lt;- read.csv(ctrl_2_unfiltered_count_file) %&gt;% unlist()
+ctrl_2_cell_barcodes &lt;- read.csv(ctrl_2_count_file) %&gt;% unlist()
+ctrl_2_vdj_barcodes &lt;- rjson::fromJSON(file=ctrl_2_vdj_file) %&gt;% unlist()
+ctrl_2_multi_vdj_barcodes &lt;- rjson::fromJSON(file=ctrl_2_multi_vdj_file) %&gt;% unlist()
+ctrl_2_multi_cell_barcodes &lt;- read.csv(ctrl_2_multi_count_file) %&gt;% unlist()</code></pre>
+<div id="total-10x-cell-barcode-count-1" class="section level3">
+<h3><strong>Total 10X Cell Barcode Count</strong></h3>
+<pre class="r"><code>cat(&#39;Number of unfiltered barcodes: &#39;, length(ctrl_2_full_barcodes), &#39;\n&#39;)</code></pre>
+<pre><code>Number of unfiltered barcodes:  737279 </code></pre>
+<pre class="r"><code>cat(&#39;Number of cell-associated barcodes: &#39;, length(ctrl_2_cell_barcodes))</code></pre>
+<pre><code>Number of cell-associated barcodes:  9260</code></pre>
+</div>
+<div id="cellranger-count-called-cell-barcodes-1" class="section level3">
+<h3><strong>Cellranger Count Called Cell Barcodes</strong></h3>
+<pre class="r"><code>if (length(setdiff(ctrl_2_cell_barcodes, ctrl_2_full_barcodes)) == 0) {
+  cat(&#39;All cell-associated barcodes found within unfiltered barcodes\n&#39;)
+}</code></pre>
+<pre><code>All cell-associated barcodes found within unfiltered barcodes</code></pre>
+</div>
+<div id="cellranger-vdj-vs-cellranger-muli-called-cell-barcodes-1" class="section level3">
+<h3><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></h3>
+<pre class="r"><code>cat(&#39;Number of vdj called cells: &#39;, length(ctrl_2_vdj_barcodes), &#39;\n&#39;)</code></pre>
+<pre><code>Number of vdj called cells:  4164 </code></pre>
+<pre class="r"><code>cat(&#39;Number of vdj called cells (with multi): &#39;, length(ctrl_2_multi_vdj_barcodes))</code></pre>
+<pre><code>Number of vdj called cells (with multi):  4069</code></pre>
+</div>
+<div id="cellranger-count-vs-cellranger-vdj-called-cell-barcodes-1" class="section level3">
+<h3><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></h3>
+<pre class="r"><code>cat(&#39;Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells: &#39;, length(intersect(ctrl_2_cell_barcodes, ctrl_2_vdj_barcodes)))</code></pre>
+<pre><code>Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells:  4068</code></pre>
+<p>**First we see that the cell barcodes returned from <code>cellranger multi</code> are the exact same barcodes returned from <code>cellranger count</code></p>
+<pre class="r"><code>ctrl_2_multi_cell_barcodes &lt;- sort(ctrl_2_multi_cell_barcodes)
+ctrl_2_cell_barcodes &lt;- sort(ctrl_2_cell_barcodes)
+
+all(ctrl_2_multi_cell_barcodes == ctrl_2_cell_barcodes)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<p><strong>Now we see that we can achieve the same result as <code>cellranger multi</code> by filtering cell barcodes from <code>cellranger vdj</code> to only cell barcodes called with <code>cellranger count</code></strong></p>
+<pre class="r"><code>ctrl_2_multi_vdj_barcodes &lt;- sort(ctrl_2_multi_vdj_barcodes)
+
+manual_filtered_barcodes &lt;- intersect(ctrl_2_cell_barcodes, ctrl_2_vdj_barcodes)
+manual_filtered_barcodes &lt;- sort(manual_filtered_barcodes)
+
+length(ctrl_2_multi_vdj_barcodes)</code></pre>
+<pre><code>[1] 4069</code></pre>
+<pre class="r"><code>length(manual_filtered_barcodes)</code></pre>
+<pre><code>[1] 4068</code></pre>
+<pre class="r"><code>setdiff(ctrl_2_multi_vdj_barcodes, manual_filtered_barcodes)</code></pre>
+<pre><code>[1] &quot;AAACCTGAGAAACGAG-1&quot;</code></pre>
+<p>We see for sample <strong>Ctrl_2</strong> that there is a difference in one cell barcode between manually filtering the barcodes and what is returned by <code>cellranger multi</code></p>
+</div>
+</div>
+<div id="sample-ctrl_3-validation" class="section level2">
+<h2><strong>Sample Ctrl_3 Validation</strong></h2>
+<pre class="r"><code>ctrl_3_full_barcodes &lt;- read.csv(ctrl_3_unfiltered_count_file) %&gt;% unlist()
+ctrl_3_cell_barcodes &lt;- read.csv(ctrl_3_count_file) %&gt;% unlist()
+ctrl_3_vdj_barcodes &lt;- rjson::fromJSON(file=ctrl_3_vdj_file) %&gt;% unlist()
+ctrl_3_multi_vdj_barcodes &lt;- rjson::fromJSON(file=ctrl_3_multi_vdj_file) %&gt;% unlist()
+ctrl_3_multi_cell_barcodes &lt;- read.csv(ctrl_3_multi_count_file) %&gt;% unlist()</code></pre>
+<div id="total-10x-cell-barcode-count-2" class="section level3">
+<h3><strong>Total 10X Cell Barcode Count</strong></h3>
+<pre class="r"><code>cat(&#39;Number of unfiltered barcodes: &#39;, length(ctrl_3_full_barcodes), &#39;\n&#39;)</code></pre>
+<pre><code>Number of unfiltered barcodes:  737279 </code></pre>
+<pre class="r"><code>cat(&#39;Number of cell-associated barcodes: &#39;, length(ctrl_3_cell_barcodes))</code></pre>
+<pre><code>Number of cell-associated barcodes:  10102</code></pre>
+</div>
+<div id="cellranger-count-called-cell-barcodes-2" class="section level3">
+<h3><strong>Cellranger Count Called Cell Barcodes</strong></h3>
+<pre class="r"><code>if (length(setdiff(ctrl_3_cell_barcodes, ctrl_3_full_barcodes)) == 0) {
+  cat(&#39;All cell-associated barcodes found within unfiltered barcodes\n&#39;)
+}</code></pre>
+<pre><code>All cell-associated barcodes found within unfiltered barcodes</code></pre>
+</div>
+<div id="cellranger-vdj-vs-cellranger-muli-called-cell-barcodes-2" class="section level3">
+<h3><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></h3>
+<pre class="r"><code>cat(&#39;Number of vdj called cells: &#39;, length(ctrl_3_vdj_barcodes), &#39;\n&#39;)</code></pre>
+<pre><code>Number of vdj called cells:  4968 </code></pre>
+<pre class="r"><code>cat(&#39;Number of vdj called cells (with multi): &#39;, length(ctrl_3_multi_vdj_barcodes))</code></pre>
+<pre><code>Number of vdj called cells (with multi):  4850</code></pre>
+</div>
+<div id="cellranger-count-vs-cellranger-vdj-called-cell-barcodes-2" class="section level3">
+<h3><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></h3>
+<pre class="r"><code>cat(&#39;Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells: &#39;, length(intersect(ctrl_3_cell_barcodes, ctrl_3_vdj_barcodes)))</code></pre>
+<pre><code>Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells:  4849</code></pre>
+<p>**First we see that the cell barcodes returned from <code>cellranger multi</code> are the exact same barcodes returned from <code>cellranger count</code></p>
+<pre class="r"><code>ctrl_3_multi_cell_barcodes &lt;- sort(ctrl_3_multi_cell_barcodes)
+ctrl_3_cell_barcodes &lt;- sort(ctrl_3_cell_barcodes)
+
+all(ctrl_3_multi_cell_barcodes == ctrl_3_cell_barcodes)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<p><strong>Now we see that we can achieve the same result as <code>cellranger multi</code> by filtering cell barcodes from <code>cellranger vdj</code> to only cell barcodes called with <code>cellranger count</code></strong></p>
+<pre class="r"><code>ctrl_3_multi_vdj_barcodes &lt;- sort(ctrl_3_multi_vdj_barcodes)
+
+manual_filtered_barcodes &lt;- intersect(ctrl_3_cell_barcodes, ctrl_3_vdj_barcodes)
+manual_filtered_barcodes &lt;- sort(manual_filtered_barcodes)
+
+length(ctrl_3_multi_vdj_barcodes)</code></pre>
+<pre><code>[1] 4850</code></pre>
+<pre class="r"><code>length(manual_filtered_barcodes)</code></pre>
+<pre><code>[1] 4849</code></pre>
+<pre class="r"><code>setdiff(ctrl_3_multi_vdj_barcodes, manual_filtered_barcodes)</code></pre>
+<pre><code>[1] &quot;AAACCTGAGACAAGCC-1&quot;</code></pre>
+<p>We see for sample <strong>Ctrl_3</strong> that there is a difference in one cell barcode between manually filtering the barcodes and what is returned by <code>cellranger multi</code></p>
+</div>
+</div>
+<div id="sample-myd88_1-validation" class="section level2">
+<h2><strong>Sample MYD88_1 Validation</strong></h2>
+<pre class="r"><code>myd88_1_full_barcodes &lt;- read.csv(myd88_1_unfiltered_count_file) %&gt;% unlist()
+myd88_1_cell_barcodes &lt;- read.csv(myd88_1_count_file) %&gt;% unlist()
+myd88_1_vdj_barcodes &lt;- rjson::fromJSON(file=myd88_1_vdj_file) %&gt;% unlist()
+myd88_1_multi_vdj_barcodes &lt;- rjson::fromJSON(file=myd88_1_multi_vdj_file) %&gt;% unlist()
+myd88_1_multi_cell_barcodes &lt;- read.csv(myd88_1_multi_count_file) %&gt;% unlist()</code></pre>
+<div id="total-10x-cell-barcode-count-3" class="section level3">
+<h3><strong>Total 10X Cell Barcode Count</strong></h3>
+<pre class="r"><code>cat(&#39;Number of unfiltered barcodes: &#39;, length(myd88_1_full_barcodes), &#39;\n&#39;)</code></pre>
+<pre><code>Number of unfiltered barcodes:  737279 </code></pre>
+<pre class="r"><code>cat(&#39;Number of cell-associated barcodes: &#39;, length(myd88_1_cell_barcodes))</code></pre>
+<pre><code>Number of cell-associated barcodes:  9395</code></pre>
+</div>
+<div id="cellranger-count-called-cell-barcodes-3" class="section level3">
+<h3><strong>Cellranger Count Called Cell Barcodes</strong></h3>
+<pre class="r"><code>if (length(setdiff(myd88_1_cell_barcodes, myd88_1_full_barcodes)) == 0) {
+  cat(&#39;All cell-associated barcodes found within unfiltered barcodes\n&#39;)
+}</code></pre>
+<pre><code>All cell-associated barcodes found within unfiltered barcodes</code></pre>
+</div>
+<div id="cellranger-vdj-vs-cellranger-muli-called-cell-barcodes-3" class="section level3">
+<h3><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></h3>
+<pre class="r"><code>cat(&#39;Number of vdj called cells: &#39;, length(myd88_1_vdj_barcodes), &#39;\n&#39;)</code></pre>
+<pre><code>Number of vdj called cells:  5365 </code></pre>
+<pre class="r"><code>cat(&#39;Number of vdj called cells (with multi): &#39;, length(myd88_1_multi_vdj_barcodes))</code></pre>
+<pre><code>Number of vdj called cells (with multi):  5140</code></pre>
+</div>
+<div id="cellranger-count-vs-cellranger-vdj-called-cell-barcodes-3" class="section level3">
+<h3><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></h3>
+<pre class="r"><code>cat(&#39;Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells: &#39;, length(intersect(myd88_1_cell_barcodes, myd88_1_vdj_barcodes)))</code></pre>
+<pre><code>Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells:  5139</code></pre>
+<p>**First we see that the cell barcodes returned from <code>cellranger multi</code> are the exact same barcodes returned from <code>cellranger count</code></p>
+<pre class="r"><code>myd88_1_multi_cell_barcodes &lt;- sort(myd88_1_multi_cell_barcodes)
+myd88_1_cell_barcodes &lt;- sort(myd88_1_cell_barcodes)
+
+all(myd88_1_multi_cell_barcodes == myd88_1_cell_barcodes)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<p><strong>Now we see that we can achieve the same result as <code>cellranger multi</code> by filtering cell barcodes from <code>cellranger vdj</code> to only cell barcodes called with <code>cellranger count</code></strong></p>
+<pre class="r"><code>myd88_1_multi_vdj_barcodes &lt;- sort(myd88_1_multi_vdj_barcodes)
+
+manual_filtered_barcodes &lt;- intersect(myd88_1_cell_barcodes, myd88_1_vdj_barcodes)
+manual_filtered_barcodes &lt;- sort(manual_filtered_barcodes)
+
+length(myd88_1_multi_vdj_barcodes)</code></pre>
+<pre><code>[1] 5140</code></pre>
+<pre class="r"><code>length(manual_filtered_barcodes)</code></pre>
+<pre><code>[1] 5139</code></pre>
+<pre class="r"><code>setdiff(myd88_1_multi_vdj_barcodes, manual_filtered_barcodes)</code></pre>
+<pre><code>[1] &quot;AAACCTGAGCGCTTAT-1&quot;</code></pre>
+<p>We see for sample <strong>MYD88_1</strong> that there is a difference in one cell barcode between manually filtering the barcodes and what is returned by <code>cellranger multi</code></p>
+</div>
+</div>
+<div id="sample-myd88_2-validation" class="section level2">
+<h2><strong>Sample MYD88_2 Validation</strong></h2>
+<pre class="r"><code>myd88_2_full_barcodes &lt;- read.csv(myd88_2_unfiltered_count_file) %&gt;% unlist()
+myd88_2_cell_barcodes &lt;- read.csv(myd88_2_count_file) %&gt;% unlist()
+myd88_2_vdj_barcodes &lt;- rjson::fromJSON(file=myd88_2_vdj_file) %&gt;% unlist()
+myd88_2_multi_vdj_barcodes &lt;- rjson::fromJSON(file=myd88_2_multi_vdj_file) %&gt;% unlist()
+myd88_2_multi_cell_barcodes &lt;- read.csv(myd88_2_multi_count_file) %&gt;% unlist()</code></pre>
+<div id="total-10x-cell-barcode-count-4" class="section level3">
+<h3><strong>Total 10X Cell Barcode Count</strong></h3>
+<pre class="r"><code>cat(&#39;Number of unfiltered barcodes: &#39;, length(myd88_2_full_barcodes), &#39;\n&#39;)</code></pre>
+<pre><code>Number of unfiltered barcodes:  737279 </code></pre>
+<pre class="r"><code>cat(&#39;Number of cell-associated barcodes: &#39;, length(myd88_2_cell_barcodes))</code></pre>
+<pre><code>Number of cell-associated barcodes:  12699</code></pre>
+</div>
+<div id="cellranger-count-called-cell-barcodes-4" class="section level3">
+<h3><strong>Cellranger Count Called Cell Barcodes</strong></h3>
+<pre class="r"><code>if (length(setdiff(myd88_2_cell_barcodes, myd88_2_full_barcodes)) == 0) {
+  cat(&#39;All cell-associated barcodes found within unfiltered barcodes\n&#39;)
+}</code></pre>
+<pre><code>All cell-associated barcodes found within unfiltered barcodes</code></pre>
+</div>
+<div id="cellranger-vdj-vs-cellranger-muli-called-cell-barcodes-4" class="section level3">
+<h3><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></h3>
+<pre class="r"><code>cat(&#39;Number of vdj called cells: &#39;, length(myd88_2_vdj_barcodes), &#39;\n&#39;)</code></pre>
+<pre><code>Number of vdj called cells:  5248 </code></pre>
+<pre class="r"><code>cat(&#39;Number of vdj called cells (with multi): &#39;, length(myd88_2_multi_vdj_barcodes))</code></pre>
+<pre><code>Number of vdj called cells (with multi):  5179</code></pre>
+</div>
+<div id="cellranger-count-vs-cellranger-vdj-called-cell-barcodes-4" class="section level3">
+<h3><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></h3>
+<pre class="r"><code>cat(&#39;Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells: &#39;, length(intersect(myd88_2_cell_barcodes, myd88_2_vdj_barcodes)))</code></pre>
+<pre><code>Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells:  5179</code></pre>
+<p>**First we see that the cell barcodes returned from <code>cellranger multi</code> are the exact same barcodes returned from <code>cellranger count</code></p>
+<pre class="r"><code>myd88_2_multi_cell_barcodes &lt;- sort(myd88_2_multi_cell_barcodes)
+myd88_2_cell_barcodes &lt;- sort(myd88_2_cell_barcodes)
+
+all(myd88_2_multi_cell_barcodes == myd88_2_cell_barcodes)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<p><strong>Now we see that we can achieve the same result as <code>cellranger multi</code> by filtering cell barcodes from <code>cellranger vdj</code> to only cell barcodes called with <code>cellranger count</code></strong></p>
+<pre class="r"><code>myd88_2_multi_vdj_barcodes &lt;- sort(myd88_2_multi_vdj_barcodes)
+
+manual_filtered_barcodes &lt;- intersect(myd88_2_cell_barcodes, myd88_2_vdj_barcodes)
+manual_filtered_barcodes &lt;- sort(manual_filtered_barcodes)
+
+length(myd88_2_multi_vdj_barcodes)</code></pre>
+<pre><code>[1] 5179</code></pre>
+<pre class="r"><code>length(manual_filtered_barcodes)</code></pre>
+<pre><code>[1] 5179</code></pre>
+<pre class="r"><code>setdiff(myd88_2_multi_vdj_barcodes, manual_filtered_barcodes)</code></pre>
+<pre><code>character(0)</code></pre>
+<p>We see for sample <strong>MYD88_1</strong> that there is no difference in barcodes between manually filtering the barcodes and what is returned by <code>cellranger multi</code></p>
+</div>
+</div>
+<div id="sample-myd88_3-validation" class="section level2">
+<h2><strong>Sample MYD88_3 Validation</strong></h2>
+<pre class="r"><code>myd88_3_full_barcodes &lt;- read.csv(myd88_3_unfiltered_count_file) %&gt;% unlist()
+myd88_3_cell_barcodes &lt;- read.csv(myd88_3_count_file) %&gt;% unlist()
+myd88_3_vdj_barcodes &lt;- rjson::fromJSON(file=myd88_3_vdj_file) %&gt;% unlist()
+myd88_3_multi_vdj_barcodes &lt;- rjson::fromJSON(file=myd88_3_multi_vdj_file) %&gt;% unlist()
+myd88_3_multi_cell_barcodes &lt;- read.csv(myd88_3_multi_count_file) %&gt;% unlist()</code></pre>
+<div id="total-10x-cell-barcode-count-5" class="section level3">
+<h3><strong>Total 10X Cell Barcode Count</strong></h3>
+<pre class="r"><code>cat(&#39;Number of unfiltered barcodes: &#39;, length(myd88_3_full_barcodes), &#39;\n&#39;)</code></pre>
+<pre><code>Number of unfiltered barcodes:  737279 </code></pre>
+<pre class="r"><code>cat(&#39;Number of cell-associated barcodes: &#39;, length(myd88_3_cell_barcodes))</code></pre>
+<pre><code>Number of cell-associated barcodes:  11295</code></pre>
+</div>
+<div id="cellranger-count-called-cell-barcodes-5" class="section level3">
+<h3><strong>Cellranger Count Called Cell Barcodes</strong></h3>
+<pre class="r"><code>if (length(setdiff(myd88_3_cell_barcodes, myd88_3_full_barcodes)) == 0) {
+  cat(&#39;All cell-associated barcodes found within unfiltered barcodes\n&#39;)
+}</code></pre>
+<pre><code>All cell-associated barcodes found within unfiltered barcodes</code></pre>
+</div>
+<div id="cellranger-vdj-vs-cellranger-muli-called-cell-barcodes-5" class="section level3">
+<h3><strong>Cellranger VDJ vs Cellranger Muli Called Cell Barcodes</strong></h3>
+<pre class="r"><code>cat(&#39;Number of vdj called cells: &#39;, length(myd88_3_vdj_barcodes), &#39;\n&#39;)</code></pre>
+<pre><code>Number of vdj called cells:  5719 </code></pre>
+<pre class="r"><code>cat(&#39;Number of vdj called cells (with multi): &#39;, length(myd88_3_multi_vdj_barcodes))</code></pre>
+<pre><code>Number of vdj called cells (with multi):  5662</code></pre>
+</div>
+<div id="cellranger-count-vs-cellranger-vdj-called-cell-barcodes-5" class="section level3">
+<h3><strong>Cellranger Count vs Cellranger VDJ Called Cell Barcodes</strong></h3>
+<pre class="r"><code>cat(&#39;Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells: &#39;, length(intersect(myd88_3_cell_barcodes, myd88_3_vdj_barcodes)))</code></pre>
+<pre><code>Number of vdj called cells from cellranger vdj, filtered by cellranger count called cells:  5660</code></pre>
+<p>**First we see that the cell barcodes returned from <code>cellranger multi</code> are the exact same barcodes returned from <code>cellranger count</code></p>
+<pre class="r"><code>myd88_3_multi_cell_barcodes &lt;- sort(myd88_3_multi_cell_barcodes)
+myd88_3_cell_barcodes &lt;- sort(myd88_3_cell_barcodes)
+
+all(myd88_3_multi_cell_barcodes == myd88_3_cell_barcodes)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<p><strong>Now we see that we can achieve the same result as <code>cellranger multi</code> by filtering cell barcodes from <code>cellranger vdj</code> to only cell barcodes called with <code>cellranger count</code></strong></p>
+<pre class="r"><code>myd88_3_multi_vdj_barcodes &lt;- sort(myd88_3_multi_vdj_barcodes)
+
+manual_filtered_barcodes &lt;- intersect(myd88_3_cell_barcodes, myd88_3_vdj_barcodes)
+manual_filtered_barcodes &lt;- sort(manual_filtered_barcodes)
+
+length(myd88_3_multi_vdj_barcodes)</code></pre>
+<pre><code>[1] 5662</code></pre>
+<pre class="r"><code>length(manual_filtered_barcodes)</code></pre>
+<pre><code>[1] 5660</code></pre>
+<pre class="r"><code>setdiff(myd88_3_multi_vdj_barcodes, manual_filtered_barcodes)</code></pre>
+<pre><code>[1] &quot;AAACCTGAGACAGGCT-1&quot; &quot;AGGGTGACAGATCCAT-1&quot;</code></pre>
+<p>We see for sample <strong>MYD88_3</strong> that there is a 2 cell barcode difference between manually filtering the barcodes and what is returned by <code>cellranger multi</code></p>
+</div>
+</div>
+<div id="conclusion" class="section level2">
+<h2><strong>Conclusion</strong></h2>
+<p>From the above report, I do not see a large enough difference in the outputs to recommend any concern. Most of the time it seems that <code>cellranger multi</code> is returning 1-2 MORE cells, as opposed to possible output clipping.</p>
+</div>
 
 
 
