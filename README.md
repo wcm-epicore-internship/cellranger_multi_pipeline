@@ -389,27 +389,27 @@ python3.6 json_to_csv_sample_sheet.csv --dataset_uid='demux_2200422_201028_A0081
 
 Cellranger Multi Commands: 
 
-cellranger multi --id=CTRL_1-GEX \ 
+cellranger multi --id=MULTI_CTRL_1-GEX_CTRL_1-Ig \ 
  --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_1-GEX_CTRL_1-Ig.csv \ 
  --disable-ui
 
-cellranger multi --id=CTRL_2-GEX \ 
+cellranger multi --id=MULTI_CTRL_2-GEX_CTRL_2-Ig \ 
  --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_2-GEX_CTRL_2-Ig.csv \ 
  --disable-ui
 
-cellranger multi --id=CTRL_3-GEX \ 
+cellranger multi --id=MULTI_CTRL_3-GEX_CTRL_3-Ig \ 
  --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_3-GEX_CTRL_3-Ig.csv \ 
  --disable-ui
 
-cellranger multi --id=MYD88_1-GEX \ 
+cellranger multi --id=MULTI_MYD88_1-GEX_MYD88_1-Ig \ 
  --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_1-GEX_MYD88_1-Ig.csv \ 
  --disable-ui
 
-cellranger multi --id=MYD88_2-GEX \ 
+cellranger multi --id=MULTI_MYD88_2-GEX_MYD88_2-Ig \ 
  --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_2-GEX_MYD88_2-Ig.csv \ 
  --disable-ui
 
-cellranger multi --id=MYD88_3-GEX \ 
+cellranger multi --id=MULTI_MYD88_3-GEX_MYD88_3-Ig \ 
  --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_3-GEX_MYD88_3-Ig.csv \ 
  --disable-ui
 
