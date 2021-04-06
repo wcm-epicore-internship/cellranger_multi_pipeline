@@ -1,0 +1,7 @@
+[gene-expression],,,
+reference,/athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-gex-mm10-2020-A,,
+[vdj],,,
+reference,/athena/epicore/ops/scratch/genomes/indices/Mus_musculus/refdata-gex-mm10-2020-A,,
+fastq_id,fastqs,lanes,feature_types
+CTRL_3-GEX,/athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974/Sample_CTRL_3-GEX, ,gene expression
+CTRL_3-Ig,/athena/epicore/ops/scratch/analysis/store100/demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974/Sample_CTRL_3-Ig, ,vdj

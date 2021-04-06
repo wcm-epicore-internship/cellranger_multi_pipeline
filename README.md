@@ -291,7 +291,7 @@ In order to properly be able to connect all aspects of the data needed to run a 
 Due to the new nature of possibly multiple paired assays on the same flowcell run, (or possibly different flowcell runs), the existing system architecture must be slightly modified to allow for a `bio_sample_id` (or a similar field) in order to identify these assays that are derived from the same tissue and single cells. At the time of this project this architecture was identified to be required for proper automation of the `cellranger multi` pipeline internally, though for proof-of-concept paired assays were assumed to be run during the same flowcell sequencing run, and to have a designated naming format (E.g. `Ctrl_1-GEX`, `Ctrl_1-Ig` for gene expression and vdj analysis on the `Ctrl_1` sample)
 
 
-### **Parsing Flowcell Design**
+### **Parsing Dataset Info**
 
 When a sequncing run occurs on the current Epilims system, the "flowcell design", being information about all the samples being sequenced on the current flowcell, can be accessed in the following way given the experiment's dataset uid.
 
@@ -385,9 +385,34 @@ Thus, the full fastq sample path needed to create a `cellranger multi` sample sh
 Finally, the output of running `json_to_csv_sample_sheet.py` is the following string, being a list of working commands to execute `cellranger mutli` on all idenfied paired assays in the given dataset.
 
 ```python
-python3.6 json_to_csv_sample_sheet.csv
+python3.6 json_to_csv_sample_sheet.csv --dataset_uid='demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
 
-{STILL UNDER DEVELOPMENT}
+Cellranger Multi Commands: 
+
+cellranger multi --id=CTRL_1-GEX \ 
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_1-GEX_CTRL_1-Ig.csv \ 
+ --disable-ui
+
+cellranger multi --id=CTRL_2-GEX \ 
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_2-GEX_CTRL_2-Ig.csv \ 
+ --disable-ui
+
+cellranger multi --id=CTRL_3-GEX \ 
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_3-GEX_CTRL_3-Ig.csv \ 
+ --disable-ui
+
+cellranger multi --id=MYD88_1-GEX \ 
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_1-GEX_MYD88_1-Ig.csv \ 
+ --disable-ui
+
+cellranger multi --id=MYD88_2-GEX \ 
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_2-GEX_MYD88_2-Ig.csv \ 
+ --disable-ui
+
+cellranger multi --id=MYD88_3-GEX \ 
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_3-GEX_MYD88_3-Ig.csv \ 
+ --disable-ui
+
 ```
 
 ## **Sequencing Monitor**
