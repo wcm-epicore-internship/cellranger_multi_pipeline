@@ -384,34 +384,68 @@ Thus, the full fastq sample path needed to create a `cellranger multi` sample sh
 
 Finally, the output of running `dataset_to_csv_sample_sheet.py` is the following string, being a list of working commands to execute `cellranger mutli` on all idenfied paired assays in the given dataset.
 
-```python
+```bash
+wget https://raw.githubusercontent.com/wcm-epicore-internship/cellranger_multi_pipeline/main/Python/dataset_to_csv_sample_sheet.py
+
 python3.6 dataset_to_csv_sample_sheet.py --dataset_uid='demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
+DATASET_UID:  demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 42218  100 42218    0     0   161k      0 --:--:-- --:--:-- --:--:--  479k
+
+Processing experiment pair:  ['CTRL_1-Ig', 'CTRL_1-GEX']
+Using GEX Reference File: : refdata-gex-mm10-2020-A
+Using VDJ Reference File: : refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0
+
+Processing experiment pair:  ['CTRL_2-Ig', 'CTRL_2-GEX']
+Using GEX Reference File: : refdata-gex-mm10-2020-A
+Using VDJ Reference File: : refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0
+
+Processing experiment pair:  ['CTRL_3-Ig', 'CTRL_3-GEX']
+Using GEX Reference File: : refdata-gex-mm10-2020-A
+Using VDJ Reference File: : refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0
+
+Processing experiment pair:  ['MYD88_1-Ig', 'MYD88_1-GEX']
+Using GEX Reference File: : refdata-gex-mm10-2020-A
+Using VDJ Reference File: : refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0
+
+Processing experiment pair:  ['MYD88_2-Ig', 'MYD88_2-GEX']
+Using GEX Reference File: : refdata-gex-mm10-2020-A
+Using VDJ Reference File: : refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0
+
+Processing experiment pair:  ['MYD88_3-Ig', 'MYD88_3-GEX']
+Using GEX Reference File: : refdata-gex-mm10-2020-A
+Using VDJ Reference File: : refdata-cellranger-vdj-GRCm38-alts-ensembl-5.0.0
+
+
 
 Cellranger Multi Commands: 
 
-cellranger multi --id=MULTI_CTRL_1-GEX_CTRL_1-Ig \ 
- --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_1-GEX_CTRL_1-Ig.csv \ 
+cellranger multi --id=MULTI_CTRL_1-GEX_CTRL_1-Ig \
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_1-GEX_CTRL_1-Ig.csv \
  --disable-ui
 
-cellranger multi --id=MULTI_CTRL_2-GEX_CTRL_2-Ig \ 
- --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_2-GEX_CTRL_2-Ig.csv \ 
+cellranger multi --id=MULTI_CTRL_2-GEX_CTRL_2-Ig \
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_2-GEX_CTRL_2-Ig.csv \
  --disable-ui
 
-cellranger multi --id=MULTI_CTRL_3-GEX_CTRL_3-Ig \ 
- --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_3-GEX_CTRL_3-Ig.csv \ 
+cellranger multi --id=MULTI_CTRL_3-GEX_CTRL_3-Ig \
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_CTRL_3-GEX_CTRL_3-Ig.csv \
  --disable-ui
 
-cellranger multi --id=MULTI_MYD88_1-GEX_MYD88_1-Ig \ 
- --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_1-GEX_MYD88_1-Ig.csv \ 
+cellranger multi --id=MULTI_MYD88_1-GEX_MYD88_1-Ig \
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_1-GEX_MYD88_1-Ig.csv \
  --disable-ui
 
-cellranger multi --id=MULTI_MYD88_2-GEX_MYD88_2-Ig \ 
- --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_2-GEX_MYD88_2-Ig.csv \ 
+cellranger multi --id=MULTI_MYD88_2-GEX_MYD88_2-Ig \
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_2-GEX_MYD88_2-Ig.csv \
  --disable-ui
 
-cellranger multi --id=MULTI_MYD88_3-GEX_MYD88_3-Ig \ 
- --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_3-GEX_MYD88_3-Ig.csv \ 
+cellranger multi --id=MULTI_MYD88_3-GEX_MYD88_3-Ig \
+ --csv=cellranger_multi_config_csvs/cellranger_multi_config_MYD88_3-GEX_MYD88_3-Ig.csv \
  --disable-ui
+
+
 
 ```
 
