@@ -68,14 +68,18 @@ config_data = yaml.safe_load(''.join(lines))
 dataset_uid = args.dataset_uid  
 # dataset_uid = 'demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
 
+project_id = [x for x in re.findall('[0-9A-Z-]*', 
+                                    re.findall('_[0-9A-Z-]*__uid', dataset_uid)[0]) 
+              if x != ''][0]
+
 get_dataset_cmd = "curl " + \
     "https://abc.med.cornell.edu/sequencing_monitor/uid/" + dataset_uid + ".json"
 direct_output = subprocess.check_output(get_dataset_cmd, shell=True)
 dataset_info = json.loads(direct_output)
 
-
-dataset_fastq_path = os.path.join(dataset_info['dataset']['path'], 
-                                  dataset_info['dataset']['uid']) 
+dataset_fastq_path = os.path.join(dataset_info['dataset']['path'],
+                                  dataset_info['dataset']['uid'], 
+                                  'Project_' + project_id) 
 
 run_data = json.loads(dataset_info['job']['flowcell_design'])
 
@@ -123,6 +127,7 @@ def find_prefixes(library_names):
 
 def filter_sets(potential_sets):
   accepted_sets = {}
+  # TODO: allow for selective 
   accepted_suffix_list = ['gex', 'ig', 'fb']
   
   for key in potential_sets.keys():
@@ -145,6 +150,10 @@ def find_similar_experiments(library_names):
   for prefix in prefixes: sets[prefix] = []
   
   for lib_name in library_names: 
+    
+    # TODO: Go off of library assay in the future, though 
+    #  for the development dataset, the library assay is not correct, 
+    #  so going off library name for now
     lib_base_name = lib_name.split('-')[0]
     
     if lib_base_name in prefixes: 
@@ -208,12 +217,26 @@ def determine_reference_from_config_data(config_data, lib_entries):
   gex_reference_genomes = cell_ranger_count[":genomes"][organism_scientific][0]
   gex_reference_genomes = {v:k for k,v in gex_reference_genomes.items()}
   gex_genome_build = lib_entries['gex']['Genome_Build']
-  gex_genome_file = gex_reference_genomes[gex_genome_build]
+  
+  if len(gex_reference_genomes) == 1: 
+    only_key = list(gex_reference_genomes.keys())[0]
+    gex_genome_file = gex_reference_genomes[only_key]
+  else: 
+    gex_genome_file = gex_reference_genomes[gex_genome_build]
+  
+  print('Using GEX Reference File: : ' + gex_genome_file)
   
   vdj_reference_genomes = cell_ranger_vdj[":genomes"][organism_scientific][0]
   vdj_reference_genomes = {v:k for k,v in vdj_reference_genomes.items()}
-  vdj_genome_build = lib_entries['gex']['Genome_Build']
-  vdj_genome_file = vdj_reference_genomes[vdj_genome_build]
+  vdj_genome_build = lib_entries['vdj']['Genome_Build']
+  
+  if len(vdj_reference_genomes) == 1: 
+    only_key = list(vdj_reference_genomes.keys())[0]
+    vdj_genome_file = vdj_reference_genomes[only_key]
+  else: 
+    vdj_genome_file = vdj_reference_genomes[vdj_genome_build]
+    
+  print('Using VDJ Reference File: : ' + vdj_genome_file)
   
   refpaths['gex'] = os.path.join(refpaths['gex'], organism_scientific, gex_genome_file)
   refpaths['vdj'] = os.path.join(refpaths['vdj'], organism_scientific, vdj_genome_file)
@@ -237,7 +260,7 @@ output_command = ""
 
 for acc_set in accepted_sets.values(): 
   
-  print("Processing experiment pair: ", acc_set)
+  print("\nProcessing experiment pair: ", acc_set)
 
   vdj_exp_name = [x for x in acc_set if 
         re.search('ig|vdj', x.lower()) is not None][0]
@@ -258,13 +281,11 @@ for acc_set in accepted_sets.values():
   ref_paths = determine_reference_from_config_data(config_data, lib_entries)
 
   gex_fastq_path = \
-    os.path.join(dataset_info['dataset']['path'], 
-                  dataset_info['dataset']['uid'], 
-                  'Sample_' + gex_exp_name) 
+    os.path.join(dataset_fastq_path,
+                 'Sample_' + gex_exp_name) 
   vdj_fastq_path = \
-    os.path.join(dataset_info['dataset']['path'], 
-                  dataset_info['dataset']['uid'], 
-                  'Sample_' + vdj_exp_name) 
+    os.path.join(dataset_fastq_path, 
+                 'Sample_' + vdj_exp_name) 
   
   exp_names = {'gex': gex_exp_name, 
                'vdj': vdj_exp_name}
