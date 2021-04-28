@@ -272,7 +272,7 @@ all(ctrl_1_multi_vdj_barcodes == manual_filtered_barcodes)
 
 In order to automate the above process of calling `cellranger multi` for a particular paired analysis, the process of making the CSV sample sheet had to first be automated. For a first iteration, this has been implemented in `Python3`
 
-[dataset_to_csv_sample_sheet.py](dataset_to_csv_sample_sheet.py)
+[dataset_to_csv_sample_sheet.py](Python/dataset_to_csv_sample_sheet.py)
 
 ### **Assumptions**
 
