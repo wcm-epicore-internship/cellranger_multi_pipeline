@@ -272,7 +272,7 @@ all(ctrl_1_multi_vdj_barcodes == manual_filtered_barcodes)
 
 In order to automate the above process of calling `cellranger multi` for a particular paired analysis, the process of making the CSV sample sheet had to first be automated. For a first iteration, this has been implemented in `Python3`
 
-[json_to_csv_sample_sheet.py](json_to_csv_sample_sheet.py)
+[dataset_to_csv_sample_sheet.py](dataset_to_csv_sample_sheet.py)
 
 ### **Assumptions**
 
@@ -284,7 +284,7 @@ A specific difficulty can be found in storing metadata that two libraries, poten
 
 **Input**
 
-In order to properly be able to connect all aspects of the data needed to run a `cellranger mutli` analysis, input to `json_to_csv_sample_sheet.py` will be the **dataset uid** of the `sequencing_monitor` dataset that contains all samples in the paired analysis. (E.g. `demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974`)
+In order to properly be able to connect all aspects of the data needed to run a `cellranger mutli` analysis, input to `dataset_to_csv_sample_sheet.py` will be the **dataset uid** of the `sequencing_monitor` dataset that contains all samples in the paired analysis. (E.g. `demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974`)
 
 ### **Identifying Paired Assays**
 
@@ -382,10 +382,10 @@ Thus, the full fastq sample path needed to create a `cellranger multi` sample sh
 
 ### **Forming Cellranger Multi Command**
 
-Finally, the output of running `json_to_csv_sample_sheet.py` is the following string, being a list of working commands to execute `cellranger mutli` on all idenfied paired assays in the given dataset.
+Finally, the output of running `dataset_to_csv_sample_sheet.py` is the following string, being a list of working commands to execute `cellranger mutli` on all idenfied paired assays in the given dataset.
 
 ```python
-python3.6 json_to_csv_sample_sheet.csv --dataset_uid='demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
+python3.6 dataset_to_csv_sample_sheet.csv --dataset_uid='demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
 
 Cellranger Multi Commands: 
 

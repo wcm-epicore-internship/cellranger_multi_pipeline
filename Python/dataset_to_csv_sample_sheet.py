@@ -1,7 +1,9 @@
 #!/bin/python
 
 # Author: Jake Sauter
-# File: json_to_csv_sample_sheet.py 
+# File: dataset_to_csv_sample_sheet.py 
+#
+# python3.6 dataset_to_csv_sample_sheet.py --dataset_uid='demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
 #
 # Input: 
 #        Run Id (Example: 201028_A00814_0296_AHVKWTDMXX)
@@ -244,7 +246,6 @@ for acc_set in accepted_sets.values():
   gex_exp_name = [x for x in acc_set if 
         re.search('gex', x.lower()) is not None][0]
 
-  # TODO: 
   # get reference files: 
   # Organism + Genome_Build + Library_Type
   def map_name_to_key(name):
@@ -265,7 +266,6 @@ for acc_set in accepted_sets.values():
   fastq_files = {gex_exp_name: "fastq_for_gex.fastq", 
                  vdj_exp_name: "fastq_for_vdj.fastq"}
 
-  # fastq_files = fetch_fastq_file_names(args.run_id, exp_name)
 
   generate_sample_sheet_for_set(acc_set, fastq_files, gex_ref_path, vdj_ref_path)
   
