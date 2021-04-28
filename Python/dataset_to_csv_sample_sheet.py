@@ -210,7 +210,7 @@ def determine_reference_from_config_data(config_data, lib_entries):
   gex_genome_build = lib_entries['gex']['Genome_Build']
   gex_genome_file = gex_reference_genomes[gex_genome_build]
   
-  vdj_reference_genomes = cell_ranger_count[":genomes"][organism_scientific][0]
+  vdj_reference_genomes = cell_ranger_vdj[":genomes"][organism_scientific][0]
   vdj_reference_genomes = {v:k for k,v in vdj_reference_genomes.items()}
   vdj_genome_build = lib_entries['gex']['Genome_Build']
   vdj_genome_file = vdj_reference_genomes[vdj_genome_build]
