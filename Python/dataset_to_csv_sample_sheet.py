@@ -1,7 +1,7 @@
 #!/bin/python
 
 # Author: Jake Sauter
-# File: json_to_csv_sample_sheet.py 
+# File: dataset_to_csv_sample_sheet.py 
 #
 # Example: python3.6 dataset_to_csv_sample_sheet.py --dataset_uid='demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
 #
@@ -181,6 +181,7 @@ def generate_sample_sheet_for_set(exp_names, fastqs, refpaths, outdir):
       csvwriter.writerow(['reference', refpaths['gex'], '', ''])
       csvwriter.writerow(['[vdj]', '', '', ''])  
       csvwriter.writerow(['reference', refpaths['vdj'], '', ''])  
+      csvwriter.writerow(['[libraries]', '', '', ''])  
       csvwriter.writerow(fields)  
       csvwriter.writerow([exp_names['gex'], fastqs['gex'], ' ', 'gene expression']) 
       csvwriter.writerow([exp_names['vdj'], fastqs['vdj'], ' ', 'vdj']) 
@@ -244,9 +245,7 @@ for acc_set in accepted_sets.values():
   gex_exp_name = [x for x in acc_set if 
         re.search('gex', x.lower()) is not None][0]
 
-  # TODO: 
-  # get reference files: 
-  # Organism + Genome_Build + Library_Type
+
   def map_name_to_key(name):
     keys = [x for x in libs.keys()]
     names = [libs[key]['Library_Name'] for key in keys]
@@ -278,8 +277,8 @@ for acc_set in accepted_sets.values():
   
   output_command = output_command + \
                   'cellranger multi --id=MULTI_' + gex_exp_name + '_' + \
-                   vdj_exp_name + ' \ \n' + \
-                  ' --csv=' + csv_samplesheet + ' \ \n' + \
+                   vdj_exp_name + ' \\\n' + \
+                  ' --csv=' + csv_samplesheet + ' \\\n' + \
                   " --disable-ui" + '\n\n'
 
 
