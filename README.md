@@ -385,7 +385,7 @@ Thus, the full fastq sample path needed to create a `cellranger multi` sample sh
 Finally, the output of running `dataset_to_csv_sample_sheet.py` is the following string, being a list of working commands to execute `cellranger mutli` on all idenfied paired assays in the given dataset.
 
 ```python
-python3.6 dataset_to_csv_sample_sheet.csv --dataset_uid='demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
+python3.6 dataset_to_csv_sample_sheet.py --dataset_uid='demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
 
 Cellranger Multi Commands: 
 

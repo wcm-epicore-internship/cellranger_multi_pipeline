@@ -1,12 +1,13 @@
 #!/bin/python
 
 # Author: Jake Sauter
-# File: dataset_to_csv_sample_sheet.py 
+# File: json_to_csv_sample_sheet.py 
 #
-# python3.6 dataset_to_csv_sample_sheet.py --dataset_uid='demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
+# Example: python3.6 dataset_to_csv_sample_sheet.py --dataset_uid='demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
+#
 #
 # Input: 
-#        Run Id (Example: 201028_A00814_0296_AHVKWTDMXX)
+#        Dataset UID (Example: demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974)
 #        gene expression reference (mapped from yaml)
 #        vdj reference (mapped from yaml)
 #
@@ -19,9 +20,7 @@
 
 
 # Possibly in this script or by a script that uses this one: 
-# 
-# Submit cellranger multi command with generated sample sheet to queue
-# thadeous sending code for datasheet to samplsheet (json processing) (ruby)
+#    Submit cellranger multi command with generated sample sheet to queue
 
 
 import os
@@ -39,22 +38,17 @@ import regex as re
 # Create the parser and add arguments
 parser = argparse.ArgumentParser(description='Generate a cellranger multi sample csv sheet.')
 
-parser.add_argument('--run_id', type=str, 
-    required=True, help='run_id to retrieve flowcell_design.json from')
+parser.add_argument('--dataset_uid', type=str, 
+    required=True, help='dataset uid to retrieve json from')
 
 parser.add_argument('--reference_csv_list', 
                     help='references to be used for each experiment')
 
 args = parser.parse_args()
-print('RUN_ID: ', args.run_id)
+print('DATASET_UID: ', args.dataset_uid)
 
 
-
-## TODO: Remove after development
-if socket.gethostname() == 'spaceship':
-  PATH_TO_YAML='/home/x1/Documents/Weill_Cornell/Spring_Project/stuff_to_sftp/config.yml'
-else: 
-  PATH_TO_YAML='/home/aladdin/sequencing_monitor/current/config/config.yml'
+PATH_TO_YAML='/home/aladdin/sequencing_monitor/current/config/config.yml'
 
 # Remove lines containing ruby specific info
 lines=[]
@@ -65,41 +59,41 @@ with open(PATH_TO_YAML,) as yaml_file:
 
 config_data = yaml.safe_load(''.join(lines))
 
-print(config_data.keys())
-
 # >>> config_data.keys()
 # dict_keys(['epicore09.pbtech', 'epicore04.med.cornell.edu', 
 # ':alerts', ':brand', ':app', ':seqbrowser', ':illumina_report', 
 # ':maintenance', ':roles', ':repository', ':mail', ':jobs', ':pipelines'])
 
-## TODO: Should I even be curling for this? Maybe I can get just as 
-# a filepath and get it on the system. This does work though as 
-# only with a run_id I can curl without saving a file and load into 
-# a python dict
 
-# TODO: Remove after development
-if socket.gethostname() == 'spaceship':
-  json_file = "/home/x1/Documents/Weill_Cornell/Spring_Project/working_flowcelldesign.json"
-  with open(json_file, 'r') as f: 
-    data = json.load(f)
-else: 
-  get_flowcell_cmd = "curl " + \
-      "https://abc.med.cornell.edu/epilims/rest/SeqmonDatasheet?run_id=" + args.run_id
-  direct_output = subprocess.check_output(get_flowcell_cmd, shell=True)
-  data = json.loads(direct_output)
+dataset_uid = args.dataset_uid  
+# dataset_uid = 'demux_2200422_201028_A00814_0296_AHVKWTDMXX_EC-LV-6398__uid16974'
 
+get_dataset_cmd = "curl " + \
+    "https://abc.med.cornell.edu/sequencing_monitor/uid/" + dataset_uid + ".json"
+direct_output = subprocess.check_output(get_dataset_cmd, shell=True)
+dataset_info = json.loads(direct_output)
+
+
+dataset_fastq_path = os.path.join(dataset_info['dataset']['path'], 
+                                  dataset_info['dataset']['uid']) 
+
+run_data = json.loads(dataset_info['job']['flowcell_design'])
+
+# >>> run_data.keys()
+# dict_keys(['flowcellid', 'flowcellinst', 'valid', 'display',
+#                  'problems', 'warnings', 'lanes', 'libraries'])
 
 # Goal: Find experiment names of all libraries
 # with the same iLab service id
 
-libs = data['libraries']
+libs = run_data['libraries']
 libs_keys = list(libs.keys())
 service_ids = [""]*len(libs)
 library_names = [""]*len(libs)
 library_types = [""]*len(libs)
 
 for i in range(len(libs)):
-  service_ids[i] = libs[libs_keys[i]]["iLab_Service_ID"]
+  service_ids[i] = libs[libs_keys[i]]["iLabs_Service_ID"]
   library_names[i] = libs[libs_keys[i]]["Library_Name"]
   library_types[i] = libs[libs_keys[i]]["Library_Type"]
 
@@ -111,7 +105,7 @@ service_id_groups = dict()
 for uniq_serv_id in unique_service_ids: 
   cur_group = []
   for key in libs.keys():
-    if libs[key]["iLab_Service_ID"] == uniq_serv_id:
+    if libs[key]["iLabs_Service_ID"] == uniq_serv_id:
       cur_group.append(key)
   service_id_groups[uniq_serv_id] = cur_group
 
@@ -126,7 +120,6 @@ def find_prefixes(library_names):
     prefix = lib_name.split('-')[0]
     prefixes.add(prefix)
   return sorted([x for x in prefixes])
-
 
 def filter_sets(potential_sets):
   accepted_sets = {}
@@ -146,7 +139,7 @@ def filter_sets(potential_sets):
     if len(accepted_sets[key]) < 2: del accepted_sets[key]
   return accepted_sets
 
-def find_similar(library_names): 
+def find_similar_experiments(library_names): 
   prefixes = find_prefixes(library_names)
   sets = {} 
   for prefix in prefixes: sets[prefix] = []
@@ -163,7 +156,7 @@ def find_similar(library_names):
 accepted_sets = []
 for key, service_id_group in service_id_groups.items(): 
   library_names = [libs[key]['Library_Name'] for key in service_id_group]
-  sets = find_similar(library_names)
+  sets = find_similar_experiments(library_names)
   if len(sets) > 0:
     accepted_sets.append(sets)
 
@@ -176,69 +169,74 @@ accepted_sets = {k:v for x in accepted_sets for k,v in x.items()}
 ## TODO: write to include feature barcoding if we want. For now
 # going to make it a lot easier to just support VDJ + Gex always
 
-def generate_sample_sheet_for_set(exp_names, fastqs, gex_ref_path, vdj_ref_path):
+def generate_sample_sheet_for_set(exp_names, fastqs, refpaths, outdir):
   fields = ['fastq_id',	'fastqs',	'lanes', 'feature_types']
 
-  filename='cellranger_config_csvs/cellranger_multi_config_' + exp_names[0] + \
-            '_' + exp_names[1] + '.csv'
+  filename=outdir+'/cellranger_multi_config_' + exp_names['gex'] + \
+            '_' + exp_names['vdj'] + '.csv'
       
   with open(filename, 'w') as csvfile:  
       csvwriter = csv.writer(csvfile)
       csvwriter.writerow(['[gene-expression]', '', '', ''])
-      csvwriter.writerow(['reference', gex_ref_path, '', ''])
+      csvwriter.writerow(['reference', refpaths['gex'], '', ''])
       csvwriter.writerow(['[vdj]', '', '', ''])  
-      csvwriter.writerow(['reference', vdj_ref_path, '', ''])  
+      csvwriter.writerow(['reference', refpaths['vdj'], '', ''])  
       csvwriter.writerow(fields)  
-      for i in range(len(exp_names)):
-        if 'ig' in exp_names[i].lower(): 
-          feature_type = 'vdj'
-        else:
-          feature_type='gene expression'
-        csvwriter.writerow([exp_names[i], fastqs[exp_names[i]], ' ', feature_type]) 
+      csvwriter.writerow([exp_names['gex'], fastqs['gex'], ' ', 'gene expression']) 
+      csvwriter.writerow([exp_names['vdj'], fastqs['vdj'], ' ', 'vdj']) 
+  
+  return(filename)
 
-
-# Get Fastq files 
-# TODO: Ask Thadeous for the best way to do this
-
-def fetch_fastq_file_names(run_id, exp_name): 
-  file_systems = config_data['epicore09.pbtech'][':filesystems'][':analysis']
-
-  relevant_dirs = []
-  for fs in file_systems:
-    dirs = os.listdir(fs)
-    for dir in dirs: 
-      if run_id in dir: 
-        relevant_dirs.append(dir)
-
-  print(relevant_dirs)
-
-
-def determine_reference_from_config_data(config_data): 
+def determine_reference_from_config_data(config_data, lib_entries): 
+  
+  refpaths = {'gex': '', 'vdj': ''}
+  
   cell_ranger_count = config_data[":pipelines"][":cellranger_count"]
   cell_ranger_vdj = config_data[":pipelines"][":cellranger_vdj"]
-  count_ref_seqs = cell_ranger_count[":genomes"]
-  count_lib_entry = libs[map_name_to_key(gex_exp_name)]
-  count_genome_dir = cell_ranger_count[':genomedir']
-  vdj_genome_dir = cell_ranger_vdj[':genomedir']
-  count_ref_seqs = cell_ranger_vdj[":genomes"]
-  vdj_ref_seqs = cell_ranger_vdj[':genomes']
-
-
-  organism = count_lib_entry['Organism'].lower()
-  genome_build = count_lib_entry['Genome_Build']
-  library_type = count_lib_entry['Library_Type']
-
+  
+  refpaths['gex'] = cell_ranger_count[':genomedir']
+  refpaths['vdj'] = cell_ranger_vdj[':genomedir']
+  
+  organism = lib_entries['gex']['Organism'].lower()
+  
   if ('mouse' in organism) or ('mus' in organism):
     organism_scientific = "Mus_musculus"
   elif ('human' in organism) or ('homo' in organism): 
     organism_scientific="Homo_sapiens"
+  
+  gex_reference_genomes = cell_ranger_count[":genomes"][organism_scientific][0]
+  gex_reference_genomes = {v:k for k,v in gex_reference_genomes.items()}
+  gex_genome_build = lib_entries['gex']['Genome_Build']
+  gex_genome_file = gex_reference_genomes[gex_genome_build]
+  
+  vdj_reference_genomes = cell_ranger_count[":genomes"][organism_scientific][0]
+  vdj_reference_genomes = {v:k for k,v in vdj_reference_genomes.items()}
+  vdj_genome_build = lib_entries['gex']['Genome_Build']
+  vdj_genome_file = vdj_reference_genomes[vdj_genome_build]
+  
+  refpaths['gex'] = os.path.join(refpaths['gex'], organism_scientific, gex_genome_file)
+  refpaths['vdj'] = os.path.join(refpaths['vdj'], organism_scientific, vdj_genome_file)
+  
+  if not os.path.exists(refpaths['gex']):
+    sys.exit('Path to reference does not exist: ', refpaths['gex'])
+  
+  if not os.path.exists(refpaths['vdj']):
+    sys.exit('Path to reference does not exist: ', refpaths['vdj'])
+  
+  
+  return refpaths
 
-  return organism_scientific
+# TODO: This will most likely change
+#   during integration
+# Set the CSV output directory
+outdir = 'cellranger_multi_config_csvs'
+os.system('mkdir ' + outdir)
 
+output_command = ""
 
 for acc_set in accepted_sets.values(): 
-
-  print("Processing experimet pair: ", acc_set)
+  
+  print("Processing experiment pair: ", acc_set)
 
   vdj_exp_name = [x for x in acc_set if 
         re.search('ig|vdj', x.lower()) is not None][0]
@@ -246,6 +244,7 @@ for acc_set in accepted_sets.values():
   gex_exp_name = [x for x in acc_set if 
         re.search('gex', x.lower()) is not None][0]
 
+  # TODO: 
   # get reference files: 
   # Organism + Genome_Build + Library_Type
   def map_name_to_key(name):
@@ -253,19 +252,35 @@ for acc_set in accepted_sets.values():
     names = [libs[key]['Library_Name'] for key in keys]
     return keys[names.index(name)]
 
-  cell_ranger_count = config_data[":pipelines"][":cellranger_count"]
-  cell_ranger_vdj = config_data[":pipelines"][":cellranger_vdj"]
-  count_genome_dir = cell_ranger_count[':genomedir']
-  vdj_genome_dir = cell_ranger_vdj[':genomedir']
-
-  organism_scientific = determine_reference_from_config_data(config_data)
-
-  gex_ref_path = count_genome_dir + '/' + organism_scientific 
-  vdj_ref_path = vdj_genome_dir + '/' + organism_scientific
-
-  fastq_files = {gex_exp_name: "fastq_for_gex.fastq", 
-                 vdj_exp_name: "fastq_for_vdj.fastq"}
+  lib_entries = {'gex': libs[map_name_to_key(gex_exp_name)], 
+                  'vdj': libs[map_name_to_key(vdj_exp_name)]}
 
 
-  generate_sample_sheet_for_set(acc_set, fastq_files, gex_ref_path, vdj_ref_path)
+  ref_paths = determine_reference_from_config_data(config_data, lib_entries)
+
+  gex_fastq_path = \
+    os.path.join(dataset_info['dataset']['path'], 
+                  dataset_info['dataset']['uid'], 
+                  'Sample_' + gex_exp_name) 
+  vdj_fastq_path = \
+    os.path.join(dataset_info['dataset']['path'], 
+                  dataset_info['dataset']['uid'], 
+                  'Sample_' + vdj_exp_name) 
   
+  exp_names = {'gex': gex_exp_name, 
+               'vdj': vdj_exp_name}
+  
+
+  fastq_files = {'gex': gex_fastq_path, 
+                 'vdj': vdj_fastq_path}
+  
+  csv_samplesheet = generate_sample_sheet_for_set(exp_names, fastq_files, ref_paths, outdir)
+  
+  output_command = output_command + \
+                  'cellranger multi --id=MULTI_' + gex_exp_name + '_' + \
+                   vdj_exp_name + ' \ \n' + \
+                  ' --csv=' + csv_samplesheet + ' \ \n' + \
+                  " --disable-ui" + '\n\n'
+
+
+print('\n\n\nCellranger Multi Commands: \n\n' + output_command)
