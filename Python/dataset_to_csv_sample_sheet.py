@@ -41,8 +41,13 @@ parser = argparse.ArgumentParser(description='Generate a cellranger multi sample
 parser.add_argument('--dataset_uid', type=str, 
     required=True, help='dataset uid to retrieve json from')
 
-parser.add_argument('--reference_csv_list', 
-                    help='references to be used for each experiment')
+parser.add_argument('--localcores', 
+                    default=32, 
+                    help='localcores argument for cellranger multi (default: 32)')
+                    
+parser.add_argument('--localmem', 
+                    default=128, 
+                    help='localmem argument for cellranger multi (default: 128)')
 
 args = parser.parse_args()
 print('DATASET_UID: ', args.dataset_uid)
@@ -127,7 +132,7 @@ def find_prefixes(library_names):
 
 def filter_sets(potential_sets):
   accepted_sets = {}
-  # TODO: allow for selective 
+
   accepted_suffix_list = ['gex', 'ig', 'fb']
   
   for key in potential_sets.keys():
@@ -300,7 +305,9 @@ for acc_set in accepted_sets.values():
                   'cellranger multi --id=MULTI_' + gex_exp_name + '_' + \
                    vdj_exp_name + ' \\\n' + \
                   ' --csv=' + csv_samplesheet + ' \\\n' + \
-                  " --disable-ui" + '\n\n'
-
+                  " --disable-ui" + \
+                  " --localcores=" + str(args.localcores) + \
+                  " --localmem=" + str(args.localmem) + '\n\n'
+                  
 
 print('\n\n\nCellranger Multi Commands: \n\n' + output_command)
